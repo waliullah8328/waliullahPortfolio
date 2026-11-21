@@ -1,5 +1,8 @@
 # Vercel-e free deploy (card chara)
 
+> **Live:** https://waliullah-portfolio-five.vercel.app (admin: `/admin`).
+> GitHub repo Vercel-e connect kora ache, tai `main` branch-e `git push` korlei auto deploy hoy.
+
 Site ar admin ekshathe deploy hoy:
 - website: `https://<project>.vercel.app`
 - admin: `https://<project>.vercel.app/admin`
