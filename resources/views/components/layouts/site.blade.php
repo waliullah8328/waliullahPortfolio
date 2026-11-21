@@ -97,5 +97,7 @@
             @include('site.partials.socials', ['size' => 'size-9'])
         </div>
     </footer>
+
+    <x-toast-stack />
 </body>
 </html>

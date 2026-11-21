@@ -130,6 +130,8 @@ document.querySelectorAll('[data-rating]').forEach((wrap) => {
     const paint = (n) => stars.forEach((s, idx) => s.classList.toggle('text-amber-400', idx < n));
     paint(parseInt(input.value || '5', 10));
     stars.forEach((s, idx) => s.addEventListener('click', () => { input.value = idx + 1; paint(idx + 1); }));
+    // After a background submit the form is reset: go back to 5 stars.
+    wrap.closest('form')?.addEventListener('ajax:success', () => { input.value = 5; paint(5); });
 });
 
 // Admin: image preview on file input --------------------------------------
@@ -213,6 +215,119 @@ if (typePicker && appFields) {
     typePicker.addEventListener('change', sync);
     sync();
 }
+
+// Toasts ---------------------------------------------------------------------
+const TOAST_ICONS = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M20 6 9 17l-5-5"/></svg>',
+    error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M12 8v5"/><path d="M12 16.5h.01"/><circle cx="12" cy="12" r="9"/></svg>',
+};
+
+function toastStack() {
+    let stack = document.getElementById('toast-stack');
+    if (!stack) {
+        stack = document.createElement('div');
+        stack.id = 'toast-stack';
+        stack.className = 'toast-stack';
+        stack.setAttribute('aria-live', 'polite');
+        document.body.appendChild(stack);
+    }
+    return stack;
+}
+
+function wireToast(el) {
+    const ms = parseInt(el.dataset.toastMs || '5000', 10);
+    el.style.setProperty('--toast-ms', `${ms}ms`);
+    let left = ms, started = Date.now(), timer;
+    const close = () => {
+        clearTimeout(timer);
+        el.classList.add('is-leaving');
+        setTimeout(() => el.remove(), 300);
+    };
+    const run = () => { started = Date.now(); timer = setTimeout(close, left); };
+    el.addEventListener('mouseenter', () => { clearTimeout(timer); left -= Date.now() - started; });
+    el.addEventListener('mouseleave', run);
+    el.querySelector('.toast-close')?.addEventListener('click', close);
+    run();
+}
+
+/** Show a toast: toast('success' | 'error', 'Message', 'Optional title'). */
+export function toast(type, message, title) {
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.setAttribute('role', type === 'error' ? 'alert' : 'status');
+    el.dataset.toastMs = type === 'error' ? '7000' : '5000';
+    el.innerHTML = `<span class="toast-icon">${TOAST_ICONS[type] || ''}</span>
+        <div class="min-w-0"><p class="toast-title"></p><p class="mt-0.5 text-slate-600 dark:text-slate-300"></p></div>
+        <button type="button" class="toast-close" aria-label="Close">&times;</button>`;
+    el.querySelector('.toast-title').textContent = title || (type === 'error' ? 'Something went wrong' : 'Success');
+    el.querySelector('.toast-title + p').textContent = message;
+    toastStack().appendChild(el);
+    wireToast(el);
+}
+window.toast = toast;
+
+// Toasts rendered by the server (after a normal form post / redirect).
+document.querySelectorAll('#toast-stack .toast').forEach(wireToast);
+
+// Forms that submit in the background and report the result with a toast --------
+const FAIL = {
+    419: 'Your session expired. Please refresh the page and try again.',
+    429: 'You are sending too fast. Please wait a minute and try again.',
+    network: 'Could not reach the server. Check your internet connection and try again.',
+    server: "Sorry, your message couldn't be sent right now. Please try again in a minute.",
+};
+
+document.querySelectorAll('form[data-ajax-form]').forEach((form) => {
+    const button = form.querySelector('button[type="submit"], button:not([type])');
+    const label = button?.innerHTML;
+
+    const clearErrors = () => form.querySelectorAll('[data-ajax-error]').forEach((e) => e.remove());
+    const showErrors = (errors) => {
+        Object.entries(errors || {}).forEach(([field, messages]) => {
+            const input = form.querySelector(`[name="${CSS.escape(field)}"]`);
+            if (!input || input.type === 'hidden' || input.classList.contains('hidden')) return;
+            const p = document.createElement('p');
+            p.className = 'error';
+            p.dataset.ajaxError = '';
+            p.textContent = messages[0];
+            (input.closest('[data-field]') || input.parentElement).appendChild(p);
+        });
+        form.querySelector('[data-ajax-error]')?.previousElementSibling?.focus?.();
+    };
+
+    form.addEventListener('submit', async (e) => {
+        if (!window.fetch) return; // very old browser: fall back to a normal post
+        e.preventDefault();
+        clearErrors();
+        if (button) { button.disabled = true; button.innerHTML = 'Sending…'; }
+
+        try {
+            const res = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin',
+            });
+            const data = await res.json().catch(() => ({}));
+
+            if (res.ok) {
+                toast('success', data.message || 'Sent!', form.dataset.successTitle || 'Message sent');
+                form.reset();
+                form.dispatchEvent(new CustomEvent('ajax:success'));
+            } else if (res.status === 422) {
+                showErrors(data.errors);
+                const first = Object.values(data.errors || {})[0]?.[0];
+                toast('error', first || 'Please check the form and try again.', 'Please fix the form');
+            } else {
+                toast('error', FAIL[res.status] || data.message || FAIL.server, res.status === 429 ? 'Slow down' : 'Not sent');
+            }
+        } catch {
+            toast('error', FAIL.network, 'Not sent');
+        } finally {
+            if (button) { button.disabled = false; button.innerHTML = label; }
+        }
+    });
+});
 
 // Flash messages auto-hide -------------------------------------------------
 document.querySelectorAll('[data-flash]').forEach((el) => {

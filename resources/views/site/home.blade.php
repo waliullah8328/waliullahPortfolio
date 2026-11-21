@@ -488,15 +488,12 @@
 
             @if (setting_on('allow_recommendations'))
                 <div class="reveal mx-auto mt-12 max-w-2xl">
-                    @if (session('recommend_success'))
-                        <div class="mb-4 rounded-xl border border-accent/30 bg-accent/10 p-4 text-sm font-medium text-slate-800 dark:text-white">{{ session('recommend_success') }}</div>
-                    @endif
                     <details class="card group p-6" @if($errors->recommend->any()) open @endif>
                         <summary class="flex cursor-pointer list-none items-center justify-between font-semibold text-slate-900 dark:text-white">
                             <span class="flex items-center gap-2"><x-icon name="award" class="text-accent" /> Worked with me? Leave a recommendation</span>
                             <x-icon name="plus" class="size-5 transition group-open:rotate-45" />
                         </summary>
-                        <form method="POST" action="{{ route('recommend.store') }}" class="mt-6 grid gap-4 sm:grid-cols-2">
+                        <form method="POST" action="{{ route('recommend.store') }}" class="mt-6 grid gap-4 sm:grid-cols-2" data-ajax-form data-success-title="Thank you!">
                             @csrf
                             <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
                             <div><label class="label" for="r-name">Name *</label><input id="r-name" name="name" value="{{ old('name') }}" class="input" required></div>
@@ -569,12 +566,9 @@
                         <div class="mt-8">@include('site.partials.socials')</div>
                     </div>
 
-                    <form method="POST" action="{{ route('contact.store') }}" class="grid gap-4 sm:grid-cols-2">
+                    <form method="POST" action="{{ route('contact.store') }}" class="grid gap-4 sm:grid-cols-2" data-ajax-form data-success-title="Message sent">
                         @csrf
                         <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
-                        @if (session('contact_success'))
-                            <div class="rounded-xl border border-accent/30 bg-accent/10 p-4 text-sm font-medium text-slate-800 sm:col-span-2 dark:text-white">{{ session('contact_success') }}</div>
-                        @endif
                         <div>
                             <label class="label" for="c-name">Name *</label>
                             <input id="c-name" name="name" value="{{ old('name') }}" class="input" required placeholder="Jane Doe">

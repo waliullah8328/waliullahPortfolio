@@ -95,10 +95,30 @@ class SiteController extends Controller
             'website' => ['prohibited'], // honeypot field hidden from humans
         ]);
 
-        Message::create($data + ['ip_address' => $request->ip()]);
+        try {
+            Message::create($data + ['ip_address' => $request->ip()]);
+        } catch (\Throwable $e) {
+            report($e);
 
-        return redirect()->to(url()->previous().'#contact')
-            ->with('contact_success', 'Thanks! Your message has been sent. I will get back to you soon.');
+            return $this->failed($request, 'contact', "Sorry, your message couldn't be sent right now. Please try again in a minute or email me directly.");
+        }
+
+        return $this->sent($request, 'contact', 'contact_success', 'Thanks! Your message has been sent. I will get back to you soon.');
+    }
+
+    /** Success: JSON for background (fetch) submits, otherwise redirect back with a toast. */
+    private function sent(Request $request, string $anchor, string $flashKey, string $message)
+    {
+        return $request->expectsJson()
+            ? response()->json(['message' => $message])
+            : redirect()->to(url()->previous().'#'.$anchor)->with($flashKey, $message);
+    }
+
+    private function failed(Request $request, string $anchor, string $message)
+    {
+        return $request->expectsJson()
+            ? response()->json(['message' => $message], 500)
+            : redirect()->to(url()->previous().'#'.$anchor)->withInput()->with('toast_error', $message);
     }
 
     public function recommend(Request $request)
@@ -113,10 +133,15 @@ class SiteController extends Controller
         ]);
 
         // Visitor recommendations stay hidden until approved in the admin panel.
-        Testimonial::create($data + ['is_visible' => false, 'sort_order' => 999]);
+        try {
+            Testimonial::create($data + ['is_visible' => false, 'sort_order' => 999]);
+        } catch (\Throwable $e) {
+            report($e);
 
-        return redirect()->to(url()->previous().'#testimonials')
-            ->with('recommend_success', 'Thank you for the recommendation! It will appear after review.');
+            return $this->failed($request, 'testimonials', "Sorry, your recommendation couldn't be saved right now. Please try again in a minute.");
+        }
+
+        return $this->sent($request, 'testimonials', 'recommend_success', 'Thank you for the recommendation! It will appear after review.');
     }
 
     public function cv()
