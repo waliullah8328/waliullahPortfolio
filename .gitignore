@@ -30,3 +30,6 @@ Thumbs.db
 /public/uploads/*
 !/public/uploads/.gitkeep
 /deploy/dist
+/.vercel
+.vercel
+.env*

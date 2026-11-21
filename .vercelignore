@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+database/*.sqlite*
+node_modules
+vendor
+public/uploads/*
+!public/uploads/.gitkeep
+public/build
+public/hot
+storage/logs/*
+deploy/dist
+.claude
