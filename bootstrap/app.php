@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Hosts like Vercel terminate HTTPS at their proxy; trust its X-Forwarded-* headers
+        // so generated URLs, redirects and secure cookies use https.
+        $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo(fn () => route("admin.login"));
         $middleware->redirectUsersTo(fn () => route("admin.dashboard"));
     })
