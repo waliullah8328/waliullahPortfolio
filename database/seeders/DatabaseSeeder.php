@@ -17,9 +17,18 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::updateOrCreate(['email' => 'admin@example.com'], [
-            'name' => 'Admin',
-            'password' => Hash::make('password'),
+        // Admin login comes from ADMIN_EMAIL / ADMIN_PASSWORD. The repo is public, so the
+        // demo password is only allowed locally, never on a live server.
+        $password = env('ADMIN_PASSWORD');
+        if (! $password) {
+            if (app()->isProduction()) {
+                throw new \RuntimeException('Set ADMIN_EMAIL and ADMIN_PASSWORD before seeding a live database.');
+            }
+            $password = 'password';
+        }
+        User::updateOrCreate(['email' => env('ADMIN_EMAIL', 'admin@example.com')], [
+            'name' => env('ADMIN_NAME', 'Admin'),
+            'password' => Hash::make($password),
         ]);
 
         Setting::put([
