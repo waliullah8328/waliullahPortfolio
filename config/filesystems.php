@@ -28,6 +28,12 @@ return [
     |
     */
 
+    /*
+    | Admin file uploads into public/uploads. Turn off on hosts whose disk is wiped on
+    | every deploy/restart (Vercel); the admin then only accepts pasted links.
+    */
+    'uploads_enabled' => (bool) env('MEDIA_UPLOADS', true),
+
     'disks' => [
 
         'local' => [

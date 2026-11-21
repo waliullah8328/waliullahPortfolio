@@ -14,13 +14,17 @@
             </div>
         @endunless
         <div class="min-w-0 flex-1 space-y-3">
-            <div class="flex flex-wrap items-center gap-3">
-                <label class="btn btn-ghost btn-sm">
-                    <x-icon name="upload" class="size-4" /> {{ $current ? 'Replace' : 'Upload' }}
-                    <input type="file" name="{{ $name }}" accept="{{ $accept }}" class="sr-only" data-preview="{{ $id }}">
-                </label>
-                <span class="text-xs font-medium text-slate-400">or paste a link</span>
-            </div>
+            @if (\App\Support\Media::uploadsEnabled())
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="btn btn-ghost btn-sm">
+                        <x-icon name="upload" class="size-4" /> {{ $current ? 'Replace' : 'Upload' }}
+                        <input type="file" name="{{ $name }}" accept="{{ $accept }}" class="sr-only" data-preview="{{ $id }}">
+                    </label>
+                    <span class="text-xs font-medium text-slate-400">or paste a link</span>
+                </div>
+            @else
+                <p class="text-xs font-medium text-slate-500">Paste a link to the {{ $file ? 'file' : 'image' }}. Uploads are off on this host.</p>
+            @endif
             <p id="{{ $id }}-name" class="truncate text-xs text-slate-500">
                 @if ($file && $current)<a href="{{ $current }}" target="_blank" rel="noopener" class="text-accent underline">Current file</a>@endif
             </p>

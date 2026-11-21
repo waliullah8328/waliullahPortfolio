@@ -12,8 +12,19 @@ use Illuminate\Support\Str;
  */
 class Media
 {
+    public static function uploadsEnabled(): bool
+    {
+        return (bool) config('filesystems.uploads_enabled', true);
+    }
+
     public static function store(UploadedFile $file, string $folder): string
     {
+        if (! static::uploadsEnabled()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'upload' => 'File uploads are turned off on this host. Paste a link (Google Drive, Dropbox, ...) instead.',
+            ]);
+        }
+
         $dir = public_path("uploads/{$folder}");
         File::ensureDirectoryExists($dir);
 

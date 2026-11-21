@@ -35,6 +35,19 @@ class MediaLinkTest extends TestCase
         $this->assertSame(asset('uploads/site/a.png'), Media::url('uploads/site/a.png'));
     }
 
+    public function test_uploads_can_be_turned_off_for_hosts_without_a_durable_disk(): void
+    {
+        config(['filesystems.uploads_enabled' => false]);
+        $this->actingAs(User::factory()->create());
+
+        $this->get(route('admin.settings', ['tab' => 'profile']))->assertOk()->assertDontSee('type="file"', false);
+
+        $this->post(route('admin.settings'), [
+            'tab' => 'profile',
+            'avatar' => \Illuminate\Http\UploadedFile::fake()->image('me.png'),
+        ])->assertSessionHasErrors('upload');
+    }
+
     public function test_admin_can_save_links_and_cv_redirects(): void
     {
         $this->actingAs(User::factory()->create());
