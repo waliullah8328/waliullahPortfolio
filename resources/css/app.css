@@ -41,7 +41,7 @@
 }
 
 @layer components {
-    .container-x { @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8; }
+    .container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
 
     .btn {
         @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 disabled:opacity-50 cursor-pointer;
