@@ -68,13 +68,13 @@ class Experience extends Model
         return $total;
     }
 
-    /** 1 -> "1 month", 14 -> "1 yr 2 months", 24 -> "2 yrs". */
+    /** 1 -> "1 month", 14 -> "1 year 2 months", 24 -> "2 years". */
     public static function humanMonths(int $months): string
     {
         $y = intdiv($months, 12);
         $m = $months % 12;
         $parts = array_filter([
-            $y ? $y.' yr'.($y > 1 ? 's' : '') : null,
+            $y ? $y.' year'.($y > 1 ? 's' : '') : null,
             $m ? $m.' month'.($m > 1 ? 's' : '') : null,
         ]);
 

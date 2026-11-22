@@ -22,8 +22,8 @@ class ExperienceTest extends TestCase
         $this->assertSame(17, Experience::totalMonths([$this->entry('2024-12-01', '2026-04-30')]));
         $this->assertSame(19, Experience::totalMonths([$this->entry('2024-12-01', '2026-04-30'), $this->entry('2026-03-01', '2026-06-30')]));
         $this->assertSame(18, Experience::totalMonths([$this->entry('2022-01-01', '2022-12-31'), $this->entry('2024-01-01', '2024-06-30')]));
-        $this->assertSame('2 yrs 1 month', Experience::humanMonths(25));
-        $this->assertSame('1 yr 2 months', Experience::humanMonths(14));
+        $this->assertSame('2 years 1 month', Experience::humanMonths(25));
+        $this->assertSame('1 year 2 months', Experience::humanMonths(14));
         $this->assertSame('5 months', Experience::humanMonths(5));
     }
 
@@ -37,7 +37,7 @@ class ExperienceTest extends TestCase
             'location' => 'On Site', 'start_date' => '2024-12-01', 'end_date' => '2026-04-30']);
 
         $this->get(route('home'))->assertOk()
-            ->assertSee('2 yrs')            // Dec 2024 - Nov 2026 = 24 months
+            ->assertSee('2 years')          // Dec 2024 - Nov 2026 = 24 months
             ->assertSee('Farmgate, Dhaka 1215')
             ->assertSee('class="xp-mode">On Site', false);
     }

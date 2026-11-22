@@ -357,7 +357,7 @@
                 @foreach ($groups as $type => [$label, $icon, $count])
                     @if ($experiences->has($type))
                         <div>
-                            <div class="reveal mb-8 flex items-center justify-between gap-4">
+                            <div class="reveal mb-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
                                 <h3 class="flex items-center gap-3 text-xl font-semibold">
                                     <span class="xp-head-icon"><x-icon :name="$icon" class="size-5" /></span>
                                     <span>{{ $label }}<span class="block text-xs font-medium text-slate-500">{{ $count }}</span></span>
