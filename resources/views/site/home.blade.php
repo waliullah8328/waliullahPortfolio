@@ -334,38 +334,69 @@
 
     {{-- EXPERIENCE --}}
     @if (setting_on('show_experience') && $experiences->isNotEmpty())
-    <section id="experience" class="section scroll-mt-16">
+    @php
+        $workItems = $experiences['work'] ?? collect();
+        $eduItems = $experiences['education'] ?? collect();
+        $workMonths = $workItems->sum(fn ($e) => $e->months);
+        $groups = [
+            'work' => ['Work experience', 'briefcase', $workItems->count().' '.str('role')->plural($workItems->count())],
+            'education' => ['Education', 'graduation', $eduItems->count().' '.str('qualification')->plural($eduItems->count())],
+        ];
+    @endphp
+    <section id="experience" class="section relative scroll-mt-16 overflow-hidden">
+        <div class="blob -z-10 -left-40 top-1/3 size-96 opacity-25 dark:opacity-50" style="background: var(--accent)"></div>
+        <div class="blob -z-10 -right-40 bottom-0 size-96 opacity-20 dark:opacity-40" style="background: var(--accent-2)"></div>
         <div class="container-x">
             <div class="reveal mx-auto max-w-2xl text-center">
-                <span class="eyebrow">Journey</span>
-                <h2 class="section-title">Experience & Education</h2>
+                <span class="eyebrow"><x-icon name="award" class="size-3.5" /> Journey</span>
+                <h2 class="section-title">Experience <span class="gradient-text">&amp; Education</span></h2>
+                <p class="mt-4 text-slate-600 dark:text-slate-400">Where I've worked and what I've studied along the way.</p>
             </div>
-            <div class="mt-14 grid gap-12 {{ $experiences->count() > 1 ? 'lg:grid-cols-2' : 'max-w-3xl mx-auto' }}">
-                @foreach (['work' => ['Work experience', 'briefcase'], 'education' => ['Education', 'graduation']] as $type => [$label, $icon])
+
+            <div class="mt-16 grid gap-14 {{ $experiences->count() > 1 ? 'lg:grid-cols-2 lg:gap-10' : 'mx-auto max-w-3xl' }}">
+                @foreach ($groups as $type => [$label, $icon, $count])
                     @if ($experiences->has($type))
                         <div>
-                            <h3 class="reveal mb-8 flex items-center gap-3 text-xl font-semibold">
-                                <span class="grid size-10 place-items-center rounded-xl bg-accent/10 text-accent"><x-icon :name="$icon" /></span>{{ $label }}
-                            </h3>
-                            <ol class="relative space-y-6 border-l-2 border-slate-200 pl-8 dark:border-white/10">
+                            <div class="reveal mb-8 flex items-center justify-between gap-4">
+                                <h3 class="flex items-center gap-3 text-xl font-semibold">
+                                    <span class="xp-head-icon"><x-icon :name="$icon" class="size-5" /></span>
+                                    <span>{{ $label }}<span class="block text-xs font-medium text-slate-500">{{ $count }}</span></span>
+                                </h3>
+                                @if ($type === 'work' && $workMonths >= 1)
+                                    <span class="xp-total"><x-icon name="clock" class="size-3.5" /> {{ \App\Models\Experience::humanMonths($workMonths) }}</span>
+                                @endif
+                            </div>
+
+                            <ol class="xp-line">
                                 @foreach ($experiences[$type] as $exp)
-                                    <li class="reveal relative">
-                                        <span class="absolute -left-[41px] top-6 size-4 rounded-full border-4 border-slate-50 dark:border-[#07070d]" style="background: var(--accent)"></span>
-                                        <div class="card card-hover p-6">
-                                            <div class="flex flex-wrap items-center justify-between gap-2">
-                                                <span class="text-xs font-semibold uppercase tracking-wider text-accent">{{ $exp->period }}</span>
-                                                @if ($exp->is_current)<span class="rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent">Current</span>@endif
+                                    <li class="reveal xp-item">
+                                        <span class="xp-node {{ $exp->is_current ? 'is-current' : '' }}"><x-icon :name="$icon" class="size-3.5" /></span>
+                                        <article class="xp-card">
+                                            <div class="flex items-start gap-4">
+                                                <span class="xp-logo" aria-hidden="true">{{ $exp->initials }}</span>
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="flex flex-wrap items-center gap-2">
+                                                        <span class="xp-period"><x-icon name="calendar" class="size-3" /> {{ $exp->period }}</span>
+                                                        @if ($exp->is_current)
+                                                            <span class="xp-current"><i></i> Current</span>
+                                                        @endif
+                                                    </div>
+                                                    <h4 class="xp-title mt-2.5 text-lg font-semibold leading-snug">{{ $exp->title }}</h4>
+                                                    <p class="mt-0.5 text-sm font-medium text-slate-600 dark:text-slate-300">{{ $exp->organization }}</p>
+                                                    <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+                                                        @if ($exp->location)<span class="inline-flex items-center gap-1"><x-icon name="map-pin" class="size-3.5" /> {{ $exp->location }}</span>@endif
+                                                        @if ($exp->months >= 1)<span class="inline-flex items-center gap-1"><x-icon name="clock" class="size-3.5" /> {{ \App\Models\Experience::humanMonths($exp->months) }}</span>@endif
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <h4 class="mt-2 text-lg font-semibold">{{ $exp->title }}</h4>
-                                            <p class="text-sm text-slate-500">{{ $exp->organization }}@if($exp->location) · {{ $exp->location }}@endif</p>
                                             @if ($exp->points)
-                                                <ul class="mt-4 space-y-2 text-sm leading-relaxed">
+                                                <ul class="mt-5 space-y-2.5 border-t border-slate-200/70 pt-4 text-sm leading-relaxed text-slate-600 dark:border-white/[0.06] dark:text-slate-300">
                                                     @foreach ($exp->points as $point)
-                                                        <li class="flex gap-2"><x-icon name="check" class="mt-0.5 size-4 shrink-0 text-accent" />{{ $point }}</li>
+                                                        <li class="flex gap-2.5"><span class="xp-bullet"><x-icon name="check" class="size-3" /></span><span>{{ $point }}</span></li>
                                                     @endforeach
                                                 </ul>
                                             @endif
-                                        </div>
+                                        </article>
                                     </li>
                                 @endforeach
                             </ol>
