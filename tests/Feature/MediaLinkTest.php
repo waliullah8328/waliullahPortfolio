@@ -27,6 +27,15 @@ class MediaLinkTest extends TestCase
         }
     }
 
+    public function test_drive_images_get_a_resized_srcset(): void
+    {
+        $set = Media::srcset('https://drive.google.com/file/d/'.self::DRIVE_ID.'/view', [240, 480]);
+        $this->assertSame('https://lh3.googleusercontent.com/d/'.self::DRIVE_ID.'=w240 240w, https://lh3.googleusercontent.com/d/'.self::DRIVE_ID.'=w480 480w', $set);
+        $this->assertNull(Media::srcset('uploads/projects/a.png', [240]));
+        $this->assertNull(Media::srcset('https://i.imgur.com/x.png', [240]));
+        $this->assertNull(Media::srcset(null, [240]));
+    }
+
     public function test_dropbox_and_plain_links(): void
     {
         $this->assertSame('https://www.dropbox.com/s/abc/me.png?raw=1', Media::url('https://www.dropbox.com/s/abc/me.png?dl=0'));

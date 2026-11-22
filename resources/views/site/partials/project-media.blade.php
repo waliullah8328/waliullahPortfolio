@@ -8,8 +8,13 @@
     $large = $large ?? false;
     $img = $project->image_url;
     $screen = $project->screen_image_url;
-    // Phones are small: ask Drive for a phone-sized copy so text in screenshots stays crisp.
-    $phone = fn (?string $path) => \App\Support\Media::url($path, false, $large ? 900 : 600);
+    // Phones are small: offer Drive copies in several widths (srcset) so the browser downloads one that
+    // matches the slot. Squeezing one huge screenshot down in the browser makes the text look soft.
+    $phone = fn (?string $path) => \App\Support\Media::url($path, false, $large ? 960 : 480);
+    $phoneSet = fn (?string $path) => \App\Support\Media::srcset($path, [240, 360, 480, 720, 960]);
+    $phoneSizes = $large ? '(min-width: 1024px) 290px, 34vw' : '(min-width: 1024px) 165px, (min-width: 640px) 21vw, 42vw';
+    $shotSet = \App\Support\Media::srcset($project->image, [480, 720, 1080, 1440, 2000]);
+    $shotSizes = $large ? '(min-width: 1024px) 860px, 92vw' : '(min-width: 1024px) 360px, (min-width: 640px) 46vw, 92vw';
     $screenPhone = $phone($project->screen_image);
     $domain = $project->live_url ? parse_url($project->live_url, PHP_URL_HOST) : str($project->title)->slug().'.app';
     $showBrowser = $project->type !== 'app';
@@ -27,7 +32,7 @@
                 </span>
             </div>
             @if ($img)
-                <img src="{{ $img }}" alt="{{ $project->title }}" loading="lazy" class="pm-shot">
+                <img src="{{ $img }}" @if ($shotSet) srcset="{{ $shotSet }}" sizes="{{ $shotSizes }}" @endif alt="{{ $project->title }}" loading="lazy" decoding="async" class="pm-shot">
             @else
                 <div class="pm-shot flex flex-col bg-white p-3 dark:bg-[#0e0e19] {{ $large ? 'sm:p-6' : '' }}">
                     <div class="flex items-center justify-between">
@@ -52,16 +57,20 @@
             {{-- second phone behind for depth --}}
             <div class="pm-phone pm-phone-back {{ $screen ? 'has-img' : '' }}" aria-hidden="true">
                 <div class="pm-screen bg-slate-100 dark:bg-[#141422]">
-                    @if ($screenPhone)<img src="{{ $screenPhone }}" alt="" loading="lazy" class="size-full object-cover object-top">@endif
+                    @if ($screenPhone)<img src="{{ $screenPhone }}" @if ($set = $phoneSet($project->screen_image)) srcset="{{ $set }}" sizes="{{ $phoneSizes }}" @endif alt="" loading="lazy" decoding="async" class="size-full object-cover object-top">@endif
                 </div>
             </div>
         @endunless
-        @php $phoneImg = $showBrowser && $screenPhone ? $screenPhone : $phone($project->image); @endphp
+        @php
+            $phonePath = $showBrowser && $project->screen_image ? $project->screen_image : $project->image;
+            $phoneImg = $phone($phonePath);
+            $phoneImgSet = $phoneSet($phonePath);
+        @endphp
         <div class="pm-phone {{ $showBrowser ? 'pm-phone-side' : 'pm-phone-center' }}">
             <span class="pm-notch"></span>
             <div class="pm-screen">
                 @if ($phoneImg)
-                    <img src="{{ $phoneImg }}" alt="" loading="lazy" class="size-full object-cover object-top">
+                    <img src="{{ $phoneImg }}" @if ($phoneImgSet) srcset="{{ $phoneImgSet }}" sizes="{{ $phoneSizes }}" @endif alt="" loading="lazy" decoding="async" class="size-full object-cover object-top">
                 @else
                     <div class="flex size-full flex-col bg-white px-2.5 pt-5 pb-2 dark:bg-[#0e0e19]">
                         <div class="flex items-center justify-between"><i class="pm-bar w-6"></i><i class="pm-logo size-3!"></i></div>

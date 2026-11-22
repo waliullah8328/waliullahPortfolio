@@ -108,6 +108,20 @@ class Media
         return $url;
     }
 
+    /**
+     * A srcset of Google Drive copies resized on Google's side, so the browser can pick the one that
+     * matches the slot. Shrinking one huge screenshot to a small mockup in the browser makes text soft.
+     * Returns null for anything Drive can't resize (uploads, other hosts); use the plain src then.
+     */
+    public static function srcset(?string $path, array $widths): ?string
+    {
+        if (! $path || ! static::isExternal($path) || ! ($id = static::driveId($path))) {
+            return null;
+        }
+
+        return collect($widths)->map(fn (int $w) => "https://lh3.googleusercontent.com/d/{$id}=w{$w} {$w}w")->join(', ');
+    }
+
     public static function delete(?string $path): void
     {
         if ($path && str_starts_with($path, 'uploads/') && File::exists(public_path($path))) {
