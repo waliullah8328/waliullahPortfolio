@@ -385,11 +385,13 @@
                                                     <p class="mt-0.5 text-sm font-medium text-slate-600 dark:text-slate-300">{{ $exp->organization }}</p>
                                                     <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
                                                         @if ($exp->location)<span class="inline-flex items-center gap-1"><x-icon name="map-pin" class="size-3.5" /> {{ $exp->location }}</span>@endif
-                                                        @if ($exp->months >= 1)<span class="inline-flex items-center gap-1"><x-icon name="clock" class="size-3.5" /> {{ \App\Models\Experience::humanMonths($exp->months) }}</span>@endif
+                                                        @if ($type === 'work' && $exp->months >= 1)<span class="inline-flex items-center gap-1"><x-icon name="clock" class="size-3.5" /> {{ \App\Models\Experience::humanMonths($exp->months) }}</span>@endif
                                                     </div>
                                                 </div>
                                             </div>
-                                            @if ($exp->points)
+                                            @if (count($exp->points) === 1)
+                                                <p class="xp-desc">{{ $exp->points[0] }}</p>
+                                            @elseif ($exp->points)
                                                 <ul class="mt-5 space-y-2.5 border-t border-slate-200/70 pt-4 text-sm leading-relaxed text-slate-600 dark:border-white/[0.06] dark:text-slate-300">
                                                     @foreach ($exp->points as $point)
                                                         <li class="xp-point" style="--i: {{ $loop->index }}"><span class="xp-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span><span>{{ $point }}</span></li>

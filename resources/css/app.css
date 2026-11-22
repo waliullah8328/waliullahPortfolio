@@ -600,3 +600,8 @@
 .xp-item.in .xp-tick svg { stroke-dashoffset: 0; }
 .xp-point:hover .xp-tick { transform: scale(1.15) rotate(-10deg); box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 22%, transparent), 0 8px 18px -4px color-mix(in oklab, var(--accent) 80%, transparent); }
 @media (prefers-reduced-motion: reduce) { .xp-tick svg { stroke-dashoffset: 0; transition: none; } }
+
+/* Experience: a single-paragraph description sits beside a gradient accent bar instead of a lone tick */
+.xp-desc { position: relative; margin-top: 1.25rem; padding: .9rem 1rem .9rem 1.15rem; border-radius: .9rem; font-size: .875rem; line-height: 1.7; color: var(--color-slate-600); background: color-mix(in oklab, var(--accent) 5%, transparent); }
+.dark .xp-desc { color: var(--color-slate-300); background: rgb(255 255 255 / .025); }
+.xp-desc::before { content: ""; position: absolute; left: 0; top: .75rem; bottom: .75rem; width: 3px; border-radius: 9999px; background-image: linear-gradient(to bottom, var(--accent), var(--accent-2)); }
