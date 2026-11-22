@@ -206,7 +206,7 @@
                     <div class="skill-tile reveal flex flex-col p-6! sm:p-7!">
                         <div class="relative z-10 flex items-start justify-between">
                             <span class="service-icon"><x-icon :name="$service->icon" class="size-6" /></span>
-                            <span class="font-display text-4xl font-bold text-slate-200 transition-colors duration-300 dark:text-white/[0.07]">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                            <span class="svc-num" aria-hidden="true">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
                         </div>
                         <h3 class="relative z-10 mt-6 text-lg font-semibold">{{ $service->title }}</h3>
                         <p class="relative z-10 mt-2 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ $service->description }}</p>
