@@ -125,7 +125,7 @@ class CopyContent extends Command
         $found = DB::connection($source)->table('settings')->where('value', 'like', 'uploads/%')->pluck('key')
             ->map(fn ($k) => "Settings → {$k}");
 
-        foreach (['projects' => 'image', 'posts' => 'cover_image', 'testimonials' => 'avatar'] as $table => $col) {
+        foreach ([['projects', 'image'], ['projects', 'screen_image'], ['posts', 'cover_image'], ['testimonials', 'avatar']] as [$table, $col]) {
             if (Schema::connection($source)->hasColumn($table, $col)) {
                 $found = $found->merge($local(DB::connection($source)->table($table), $col)->count()
                     ? ["{$table} ({$col})"] : []);

@@ -70,6 +70,9 @@
         <div class="space-y-6">
             <div class="card space-y-4 p-6">
                 <x-admin.image-input name="image" label="Cover image" :current="$project->image_url" :link="$project->image" />
+                <x-admin.image-input name="screen_image" label="Second screen image" remove-name="remove_screen_image"
+                    :current="$project->screen_image_url" :link="$project->screen_image"
+                    help="Mobile App: shown on the phone behind. Web + App: shown on the phone next to the browser. Portrait screenshot works best." />
             </div>
             <div class="card space-y-3 p-6">
                 <x-admin.toggle name="is_published" label="Published" help="Visible on the website" :checked="old('is_published', $project->is_published)" />

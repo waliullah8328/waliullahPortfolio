@@ -30,6 +30,7 @@ class ProjectController extends Controller
         $data = $this->validated($request);
         $data['slug'] = $this->uniqueSlug(Project::class, $request->slug, $data['title']);
         $data['image'] = Media::replace($request->file('image'), null, 'projects', $request->input('image_link'));
+        $data['screen_image'] = Media::replace($request->file('screen_image'), null, 'projects', $request->input('screen_image_link'));
 
         Project::create($data);
 
@@ -52,6 +53,12 @@ class ProjectController extends Controller
         }
         $data['image'] = Media::replace($request->file('image'), $project->image, 'projects', $request->input('image_link'));
 
+        if ($request->boolean('remove_screen_image')) {
+            Media::delete($project->screen_image);
+            $project->screen_image = null;
+        }
+        $data['screen_image'] = Media::replace($request->file('screen_image'), $project->screen_image, 'projects', $request->input('screen_image_link'));
+
         $project->update($data);
 
         return redirect()->route('admin.projects.index')->with('success', 'Project updated.');
@@ -60,6 +67,7 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         Media::delete($project->image);
+        Media::delete($project->screen_image);
         $project->delete();
 
         return back()->with('success', 'Project deleted.');
@@ -82,8 +90,10 @@ class ProjectController extends Controller
             'sort_order' => ['nullable', 'integer'],
             'image' => ['nullable', 'image', 'max:5120'],
             'image_link' => ['nullable', 'url', 'max:2048'],
+            'screen_image' => ['nullable', 'image', 'max:5120'],
+            'screen_image_link' => ['nullable', 'url', 'max:2048'],
         ]);
-        unset($data['image'], $data['image_link'], $data['slug']);
+        unset($data['image'], $data['image_link'], $data['screen_image'], $data['screen_image_link'], $data['slug']);
 
         if ($data['type'] === 'website') {
             $data['app_store_url'] = $data['play_store_url'] = null;

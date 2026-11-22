@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 class Project extends Model
 {
     protected $fillable = [
-        'title', 'slug', 'category', 'type', 'summary', 'description', 'image', 'tech_stack',
+        'title', 'slug', 'category', 'type', 'summary', 'description', 'image', 'screen_image', 'tech_stack',
         'live_url', 'repo_url', 'app_store_url', 'play_store_url', 'is_featured', 'is_published', 'sort_order',
     ];
 
@@ -58,6 +58,11 @@ class Project extends Model
     public function getImageUrlAttribute(): ?string
     {
         return Media::url($this->image);
+    }
+
+    public function getScreenImageUrlAttribute(): ?string
+    {
+        return Media::url($this->screen_image);
     }
 
     public function getHtmlAttribute(): string

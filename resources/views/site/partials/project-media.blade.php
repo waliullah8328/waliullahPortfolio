@@ -7,6 +7,7 @@
 @php
     $large = $large ?? false;
     $img = $project->image_url;
+    $screen = $project->screen_image_url;
     $domain = $project->live_url ? parse_url($project->live_url, PHP_URL_HOST) : str($project->title)->slug().'.app';
     $showBrowser = $project->type !== 'app';
     $showPhone = $project->is_app;
@@ -46,13 +47,18 @@
     @if ($showPhone)
         @unless ($showBrowser)
             {{-- second phone behind for depth --}}
-            <div class="pm-phone pm-phone-back" aria-hidden="true"><div class="pm-screen bg-slate-100 dark:bg-[#141422]"></div></div>
+            <div class="pm-phone pm-phone-back {{ $screen ? 'has-img' : '' }}" aria-hidden="true">
+                <div class="pm-screen bg-slate-100 dark:bg-[#141422]">
+                    @if ($screen)<img src="{{ $screen }}" alt="" loading="lazy" class="size-full object-cover object-top">@endif
+                </div>
+            </div>
         @endunless
+        @php $phoneImg = $showBrowser ? ($screen ?: $img) : $img; @endphp
         <div class="pm-phone {{ $showBrowser ? 'pm-phone-side' : 'pm-phone-center' }}">
             <span class="pm-notch"></span>
             <div class="pm-screen">
-                @if ($img)
-                    <img src="{{ $img }}" alt="" loading="lazy" class="size-full object-cover object-top">
+                @if ($phoneImg)
+                    <img src="{{ $phoneImg }}" alt="" loading="lazy" class="size-full object-cover object-top">
                 @else
                     <div class="flex size-full flex-col bg-white px-2.5 pt-5 pb-2 dark:bg-[#0e0e19]">
                         <div class="flex items-center justify-between"><i class="pm-bar w-6"></i><i class="pm-logo size-3!"></i></div>
