@@ -648,3 +648,7 @@
 .xp-total-value { font-size: .95rem; font-weight: 700; background-image: linear-gradient(120deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .xp-total-label { font-size: .65rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-slate-500); }
 .xp-mode { display: inline-flex; align-items: center; border-radius: 9999px; padding: .2rem .6rem; font-size: .7rem; font-weight: 600; color: var(--accent); background: color-mix(in oklab, var(--accent) 10%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 20%, transparent); }
+
+/* Horizontal tab strips: still scroll on small phones, but without a visible scrollbar */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }

@@ -556,7 +556,7 @@
                     $webCount = $projects->filter(fn ($p) => in_array($p->type, ['website', 'both'], true))->count();
                 @endphp
                 @if ($appCount && $webCount)
-                    <div class="reveal mt-14 flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white/70 p-1.5 backdrop-blur sm:inline-flex dark:border-white/10 dark:bg-white/[0.04]" data-filter-group="home">
+                    <div class="no-scrollbar reveal mt-14 flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white/70 p-1.5 backdrop-blur sm:inline-flex dark:border-white/10 dark:bg-white/[0.04]" data-filter-group="home">
                         <button type="button" data-filter="*" class="skill-tab is-active"><x-icon name="grid" class="size-4" /> All <span>{{ $projects->count() }}</span></button>
                         <button type="button" data-filter="app" class="skill-tab"><x-icon name="smartphone" class="size-4" /> Mobile Apps <span>{{ $appCount }}</span></button>
                         <button type="button" data-filter="web" class="skill-tab"><x-icon name="globe" class="size-4" /> Web <span>{{ $webCount }}</span></button>

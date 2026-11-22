@@ -10,8 +10,8 @@
                 <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">Flutter mobile apps and Laravel web apps I've designed, built and shipped.</p>
             </div>
 
-            <div class="reveal mt-10 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div class="flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white/70 p-1.5 backdrop-blur sm:inline-flex dark:border-white/10 dark:bg-white/[0.04]">
+            <div class="reveal mt-10 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
+                <div class="no-scrollbar flex max-w-full shrink-0 gap-1 self-start overflow-x-auto rounded-2xl border border-slate-200 bg-white/70 p-1.5 backdrop-blur dark:border-white/10 dark:bg-white/[0.04]">
                     @foreach (['' => ['All', 'grid'], 'app' => ['Mobile Apps', 'smartphone'], 'website' => ['Websites', 'globe']] as $val => [$lbl, $icon])
                         <a href="{{ route('projects.index', array_filter(['type' => $val, 'category' => request('category')])) }}"
                            class="skill-tab {{ (string) request('type') === $val ? 'is-active' : '' }}">
@@ -21,7 +21,7 @@
                 </div>
 
                 @if ($categories->count() > 1)
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex min-w-0 flex-wrap gap-2 lg:justify-end lg:pt-1.5">
                         @foreach (collect(['' => 'All categories'])->merge($categories->mapWithKeys(fn ($c) => [$c => $c])) as $val => $lbl)
                             <a href="{{ route('projects.index', array_filter(['category' => $val, 'type' => request('type')])) }}"
                                class="pc-chip px-3.5! py-1.5! text-xs! transition hover:border-accent hover:text-accent {{ (string) request('category') === (string) $val ? 'border-accent! bg-accent/10! text-accent!' : '' }}">{{ $lbl }}</a>
