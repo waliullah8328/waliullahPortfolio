@@ -8,6 +8,9 @@
     $large = $large ?? false;
     $img = $project->image_url;
     $screen = $project->screen_image_url;
+    // Phones are small: ask Drive for a phone-sized copy so text in screenshots stays crisp.
+    $phone = fn (?string $path) => \App\Support\Media::url($path, false, $large ? 900 : 600);
+    $screenPhone = $phone($project->screen_image);
     $domain = $project->live_url ? parse_url($project->live_url, PHP_URL_HOST) : str($project->title)->slug().'.app';
     $showBrowser = $project->type !== 'app';
     $showPhone = $project->is_app;
@@ -49,11 +52,11 @@
             {{-- second phone behind for depth --}}
             <div class="pm-phone pm-phone-back {{ $screen ? 'has-img' : '' }}" aria-hidden="true">
                 <div class="pm-screen bg-slate-100 dark:bg-[#141422]">
-                    @if ($screen)<img src="{{ $screen }}" alt="" loading="lazy" class="size-full object-cover object-top">@endif
+                    @if ($screenPhone)<img src="{{ $screenPhone }}" alt="" loading="lazy" class="size-full object-cover object-top">@endif
                 </div>
             </div>
         @endunless
-        @php $phoneImg = $showBrowser ? ($screen ?: $img) : $img; @endphp
+        @php $phoneImg = $showBrowser && $screenPhone ? $screenPhone : $phone($project->image); @endphp
         <div class="pm-phone {{ $showBrowser ? 'pm-phone-side' : 'pm-phone-center' }}">
             <span class="pm-notch"></span>
             <div class="pm-screen">

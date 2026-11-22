@@ -364,7 +364,7 @@
 .prose-content > :first-child { margin-top: 0; }
 .pm-large .pm-phone-center { width: 24%; }
 .pm-large .pm-phone-back { width: 21%; }
-.pm-phone-back.has-img { opacity: .9; }
+.pm-phone-back.has-img { opacity: 1; }
 .pm-phone-back .pm-screen { background-image: linear-gradient(160deg, color-mix(in oklab, var(--accent) 30%, transparent), color-mix(in oklab, var(--accent-2) 20%, transparent)); }
 
 /* ---------- Hero phone (Flutter profile app) ---------- */

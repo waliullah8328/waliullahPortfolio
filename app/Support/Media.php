@@ -86,13 +86,16 @@ class Media
         return isset($query['id']) && preg_match('~^[A-Za-z0-9_-]{10,}$~', $query['id']) ? $query['id'] : null;
     }
 
-    /** Turn a share link into one a browser can use directly as an <img> or a download. */
-    public static function externalUrl(string $url, bool $file = false): string
+    /**
+     * Turn a share link into one a browser can use directly as an <img> or a download.
+     * $width asks Google Drive for an image resized on its side (sharper than a browser shrinking a huge PNG).
+     */
+    public static function externalUrl(string $url, bool $file = false, int $width = 2000): string
     {
         if ($id = static::driveId($url)) {
             return $file
                 ? "https://drive.google.com/file/d/{$id}/view"        // opens Google's PDF viewer with a download button
-                : "https://lh3.googleusercontent.com/d/{$id}=w2000";   // direct image
+                : "https://lh3.googleusercontent.com/d/{$id}=w{$width}";   // direct image
         }
 
         if (preg_match('~^https?://(www\.)?dropbox\.com/~i', $url)) {
@@ -113,12 +116,12 @@ class Media
     }
 
     /** Public URL for a stored path or a pasted link. Pass $file = true for documents (CV). */
-    public static function url(?string $path, bool $file = false): ?string
+    public static function url(?string $path, bool $file = false, int $width = 2000): ?string
     {
         if (! $path) {
             return null;
         }
 
-        return static::isExternal($path) ? static::externalUrl($path, $file) : asset($path);
+        return static::isExternal($path) ? static::externalUrl($path, $file, $width) : asset($path);
     }
 }
