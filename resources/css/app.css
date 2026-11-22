@@ -675,3 +675,60 @@
     .tm-track { animation: none; }
     .tm-card[aria-hidden="true"] { display: none; }
 }
+
+/* ---------- Mobile drawer ---------- */
+.drawer-burger { position: relative; display: grid; place-content: center; gap: 4px; width: 2.5rem; height: 2.5rem; border-radius: .75rem; color: var(--color-slate-700); transition: background .2s; }
+.dark .drawer-burger { color: var(--color-slate-200); }
+.drawer-burger:hover { background: rgb(148 163 184 / .2); }
+.drawer-burger span { display: block; height: 2px; border-radius: 9999px; background: currentColor; transition: width .3s; }
+.drawer-burger span:nth-child(1) { width: 1.25rem; }
+.drawer-burger span:nth-child(2) { width: .85rem; margin-left: auto; }
+.drawer-burger span:nth-child(3) { width: 1.05rem; }
+.drawer-burger:hover span { width: 1.25rem; }
+
+.drawer { position: fixed; inset: 0; z-index: 70; visibility: hidden; pointer-events: none; }
+.drawer.is-open { visibility: visible; pointer-events: auto; }
+.drawer-backdrop { position: absolute; inset: 0; background: rgb(2 6 23 / .45); backdrop-filter: blur(6px); opacity: 0; transition: opacity .35s ease; }
+.drawer.is-open .drawer-backdrop { opacity: 1; }
+.drawer-panel { position: absolute; top: .75rem; right: .75rem; bottom: .75rem; display: flex; flex-direction: column; width: min(21rem, calc(100vw - 1.5rem)); overflow-y: auto; overflow-x: hidden; padding: 1.25rem; border-radius: 1.75rem; border: 1px solid rgb(255 255 255 / .7); background: rgb(255 255 255 / .92); backdrop-filter: blur(24px); box-shadow: 0 30px 80px -20px rgb(15 23 42 / .45); transform: translateX(calc(100% + 1rem)); transition: transform .5s cubic-bezier(.2, .9, .2, 1); }
+.dark .drawer-panel { border-color: rgb(255 255 255 / .08); background: rgb(12 12 22 / .92); box-shadow: 0 30px 80px -20px rgb(0 0 0 / .8); }
+.drawer.is-open .drawer-panel { transform: none; }
+.drawer-glow { position: absolute; top: -6rem; right: -6rem; width: 16rem; height: 16rem; border-radius: 9999px; pointer-events: none; background: radial-gradient(circle, color-mix(in oklab, var(--accent) 35%, transparent), transparent 70%); }
+.drawer-glow + * { position: relative; }
+.drawer-close { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex-shrink: 0; border-radius: 9999px; color: var(--color-slate-600); background: var(--color-slate-100); transition: transform .3s, background .2s, color .2s; }
+.dark .drawer-close { color: var(--color-slate-300); background: rgb(255 255 255 / .06); }
+.drawer-close:hover { transform: rotate(90deg); color: var(--accent); }
+
+.drawer-nav { display: grid; gap: .25rem; }
+.drawer-link { position: relative; display: flex; align-items: center; gap: .85rem; padding: .6rem .75rem; border-radius: 1rem; font-weight: 600; font-size: .95rem; color: var(--color-slate-700); opacity: 0; transform: translateX(1.5rem); transition: opacity .4s ease, transform .5s cubic-bezier(.2, .9, .2, 1), background .2s, color .2s; }
+.dark .drawer-link { color: var(--color-slate-200); }
+.drawer.is-open .drawer-link { opacity: 1; transform: none; transition-delay: calc(.08s + var(--i, 0) * .045s), calc(.08s + var(--i, 0) * .045s), 0s, 0s; }
+.drawer-link:hover { background: color-mix(in oklab, var(--accent) 8%, transparent); color: var(--accent); }
+.drawer-link-icon { display: grid; place-items: center; flex-shrink: 0; width: 2.25rem; height: 2.25rem; border-radius: .8rem; color: var(--accent); background: color-mix(in oklab, var(--accent) 10%, transparent); transition: background .25s, color .25s, transform .3s; }
+.drawer-link:hover .drawer-link-icon { transform: scale(1.06); }
+.drawer-link-arrow { color: var(--color-slate-400); transition: transform .25s, color .25s; }
+.drawer-link:hover .drawer-link-arrow { transform: translateX(3px); color: var(--accent); }
+.drawer-link.is-active { color: var(--accent); background: color-mix(in oklab, var(--accent) 10%, transparent); }
+.drawer-link.is-active .drawer-link-icon { color: #fff; background-image: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 8px 18px -8px color-mix(in oklab, var(--accent) 80%, transparent); }
+.drawer-link.is-active .drawer-link-arrow { color: var(--accent); }
+.drawer-theme { display: grid; place-items: center; flex-shrink: 0; width: 2.25rem; height: 2.25rem; border-radius: .75rem; color: var(--color-slate-600); border: 1px solid var(--color-slate-200); transition: color .2s, border-color .2s; }
+.dark .drawer-theme { color: var(--color-slate-300); border-color: rgb(255 255 255 / .1); }
+.drawer-theme:hover { color: var(--accent); border-color: var(--accent); }
+html.drawer-lock { overflow: hidden; }
+
+/* ---------- Back to top ---------- */
+.to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 40; display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 9999px; color: #fff; cursor: pointer; opacity: 0; transform: translateY(1rem) scale(.8); pointer-events: none; transition: opacity .35s, transform .45s cubic-bezier(.34, 1.56, .64, 1); }
+.to-top.is-visible { opacity: 1; transform: none; pointer-events: auto; }
+.to-top-arrow { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 9999px; background-image: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 24px -8px color-mix(in oklab, var(--accent) 80%, transparent); transition: transform .3s; }
+.to-top:hover .to-top-arrow { transform: translateY(-3px); }
+.to-top:hover .to-top-arrow svg { animation: to-top-bounce .8s ease infinite; }
+.to-top-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.to-top-track { fill: rgb(255 255 255 / .85); stroke: var(--color-slate-200); stroke-width: 2.5; }
+.dark .to-top-track { fill: rgb(12 12 22 / .85); stroke: rgb(255 255 255 / .1); }
+.to-top-progress { fill: none; stroke: url(#to-top-grad); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 138.2; stroke-dashoffset: 138.2; }
+@keyframes to-top-bounce { 50% { transform: translateY(-3px); } }
+@media (min-width: 640px) { .to-top { right: 1.75rem; bottom: 1.75rem; } }
+@media (prefers-reduced-motion: reduce) { .drawer-panel, .drawer-link, .to-top { transition: none; } .to-top:hover .to-top-arrow svg { animation: none; } }
+.drawer-close:focus { outline: none; }
+.drawer-close:focus-visible, .drawer-link:focus-visible, .to-top:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.to-top-arrow { position: relative; z-index: 1; }

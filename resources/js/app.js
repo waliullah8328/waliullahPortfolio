@@ -353,3 +353,70 @@ if (lightbox) {
     });
     lightbox.addEventListener('close', () => { img.src = ''; });
 }
+
+// Mobile drawer -----------------------------------------------------------
+const drawer = document.querySelector('[data-drawer]');
+if (drawer) {
+    const openBtn = document.querySelector('[data-drawer-open]');
+    const panel = drawer.querySelector('.drawer-panel');
+
+    // Highlight the home-page section currently on screen.
+    const markActiveSection = () => {
+        const links = drawer.querySelectorAll('.drawer-link[data-section]');
+        if (!links.length || !document.getElementById(links[0].dataset.section)) return;
+        let current = null;
+        links.forEach((link) => {
+            const section = document.getElementById(link.dataset.section);
+            if (section && section.getBoundingClientRect().top <= window.innerHeight * 0.35) current = link;
+        });
+        links.forEach((link) => link.classList.toggle('is-active', link === current));
+    };
+
+    const setOpen = (open) => {
+        drawer.classList.toggle('is-open', open);
+        drawer.setAttribute('aria-hidden', String(!open));
+        openBtn?.setAttribute('aria-expanded', String(open));
+        document.documentElement.classList.toggle('drawer-lock', open);
+        if (open) {
+            markActiveSection();
+            setTimeout(() => panel.querySelector('.drawer-close')?.focus(), 50);
+        } else {
+            openBtn?.focus();
+        }
+    };
+
+    openBtn?.addEventListener('click', () => setOpen(true));
+    drawer.querySelectorAll('[data-drawer-close]').forEach((el) => el.addEventListener('click', () => setOpen(false)));
+    drawer.querySelectorAll('.drawer-link').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && drawer.classList.contains('is-open')) setOpen(false);
+    });
+    // Close if the screen grows to desktop size while open.
+    matchMedia('(min-width: 768px)').addEventListener('change', (e) => e.matches && drawer.classList.contains('is-open') && setOpen(false));
+}
+
+// Back to top -------------------------------------------------------------
+const toTop = document.querySelector('[data-to-top]');
+if (toTop) {
+    const ring = toTop.querySelector('[data-to-top-progress]');
+    const length = 2 * Math.PI * 22;
+    let ticking = false;
+    const update = () => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+        ring.style.strokeDashoffset = String(length * (1 - progress));
+        const show = window.scrollY > 500;
+        toTop.classList.toggle('is-visible', show);
+        toTop.tabIndex = show ? 0 : -1;
+        ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+        if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+    toTop.addEventListener('click', () => {
+        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+}
