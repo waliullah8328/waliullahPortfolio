@@ -392,7 +392,7 @@
                                             @if ($exp->points)
                                                 <ul class="mt-5 space-y-2.5 border-t border-slate-200/70 pt-4 text-sm leading-relaxed text-slate-600 dark:border-white/[0.06] dark:text-slate-300">
                                                     @foreach ($exp->points as $point)
-                                                        <li class="flex gap-2.5"><span class="xp-bullet"><x-icon name="check" class="size-3" /></span><span>{{ $point }}</span></li>
+                                                        <li class="xp-point" style="--i: {{ $loop->index }}"><span class="xp-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span><span>{{ $point }}</span></li>
                                                     @endforeach
                                                 </ul>
                                             @endif

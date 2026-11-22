@@ -590,5 +590,13 @@
 .xp-current { display: inline-flex; align-items: center; gap: .4rem; border-radius: 9999px; padding: .2rem .6rem; font-size: .7rem; font-weight: 700; color: #059669; background: rgb(16 185 129 / .12); }
 .dark .xp-current { color: #34d399; }
 .xp-current i { width: .4rem; height: .4rem; border-radius: 9999px; background: currentColor; box-shadow: 0 0 0 3px rgb(16 185 129 / .25); }
-.xp-bullet { display: grid; place-items: center; flex-shrink: 0; width: 1.15rem; height: 1.15rem; margin-top: .15rem; border-radius: .35rem; color: var(--accent); background: color-mix(in oklab, var(--accent) 12%, transparent); }
 @media (prefers-reduced-motion: reduce) { .xp-node.is-current::after { animation: none; } }
+
+/* Experience bullet: gradient badge with a check that draws itself when the card scrolls in */
+.xp-point { display: flex; gap: .75rem; }
+.xp-tick { position: relative; display: grid; place-items: center; flex-shrink: 0; width: 1.4rem; height: 1.4rem; margin-top: .05rem; border-radius: 9999px; background-image: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 14%, transparent), 0 6px 14px -4px color-mix(in oklab, var(--accent) 65%, transparent); transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), box-shadow .35s; }
+.xp-tick::before { content: ""; position: absolute; inset: 1px; border-radius: inherit; background: linear-gradient(to bottom, rgb(255 255 255 / .35), transparent 55%); pointer-events: none; }
+.xp-tick svg { position: relative; width: .85rem; height: .85rem; fill: none; stroke: #fff; stroke-width: 3.25; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 20; stroke-dashoffset: 20; transition: stroke-dashoffset .55s cubic-bezier(.65, 0, .35, 1); transition-delay: calc(.25s + var(--i, 0) * .12s); }
+.xp-item.in .xp-tick svg { stroke-dashoffset: 0; }
+.xp-point:hover .xp-tick { transform: scale(1.15) rotate(-10deg); box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 22%, transparent), 0 8px 18px -4px color-mix(in oklab, var(--accent) 80%, transparent); }
+@media (prefers-reduced-motion: reduce) { .xp-tick svg { stroke-dashoffset: 0; transition: none; } }
