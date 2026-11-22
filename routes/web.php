@@ -38,6 +38,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::resource('skills', Admin\SkillController::class)->except('show');
         Route::resource('services', Admin\ServiceController::class)->except('show');
+        Route::resource('categories', Admin\ProjectCategoryController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['categories' => 'category']);
         Route::resource('projects', Admin\ProjectController::class)->except('show')->scoped(['project' => 'id']);
         Route::resource('experiences', Admin\ExperienceController::class)->except('show');
         Route::resource('certificates', Admin\CertificateController::class)->except('show');

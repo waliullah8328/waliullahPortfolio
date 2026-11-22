@@ -576,7 +576,7 @@
 
     {{-- RECOMMENDATIONS --}}
     @if (setting_on('show_testimonials'))
-    <section id="testimonials" class="section scroll-mt-16">
+    <section id="testimonials" class="section scroll-mt-16 overflow-x-clip">
         <div class="container-x">
             <div class="reveal mx-auto max-w-2xl text-center">
                 <span class="eyebrow">Recommendations</span>
@@ -584,29 +584,41 @@
             </div>
 
             @if ($testimonials->isNotEmpty())
-                <div class="mt-14 columns-1 gap-6 space-y-6 md:columns-2 lg:columns-3">
-                    @foreach ($testimonials as $t)
-                        <figure class="card reveal break-inside-avoid p-7">
-                            <x-icon name="quote" class="size-8 text-accent/30" />
-                            <div class="mt-3 flex gap-0.5 text-accent">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <x-icon name="star" class="size-4 {{ $i <= $t->rating ? 'fill-current' : 'text-slate-300 dark:text-white/15' }}" />
-                                @endfor
-                            </div>
-                            <blockquote class="mt-4 leading-relaxed text-slate-700 dark:text-slate-300">“{{ $t->content }}”</blockquote>
-                            <figcaption class="mt-6 flex items-center gap-3">
-                                @if ($t->avatar_url)
-                                    <img src="{{ $t->avatar_url }}" alt="{{ $t->name }}" class="size-11 rounded-full object-cover">
-                                @else
-                                    <span class="grid size-11 place-items-center rounded-full text-sm font-bold text-white" style="background-image: linear-gradient(135deg, var(--accent), var(--accent-2))">{{ $t->initials }}</span>
-                                @endif
-                                <div>
-                                    <p class="font-semibold text-slate-900 dark:text-white">{{ $t->name }}</p>
-                                    <p class="text-sm text-slate-500">{{ collect([$t->position, $t->company])->filter()->join(' · ') }}</p>
-                                </div>
-                            </figcaption>
-                        </figure>
-                    @endforeach
+                @php
+                    // Repeat the cards so the strip is always wider than the screen; the animation
+                    // slides exactly one copy, which makes the loop seamless.
+                    // Enough copies to cover a 4K screen while one copy slides away (~11 cards).
+                    $copies = max(2, 1 + (int) ceil(11 / $testimonials->count()));
+                @endphp
+                <div class="reveal tm-marquee tm-bleed mt-14" style="--tm-copies: {{ $copies }}; --tm-duration: {{ $testimonials->count() * 9 }}s">
+                    <div class="tm-track">
+                        @for ($copy = 0; $copy < $copies; $copy++)
+                            @foreach ($testimonials as $t)
+                                <figure class="tm-card" @if ($copy > 0) aria-hidden="true" @endif>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex gap-0.5 text-amber-400">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <x-icon name="star" class="size-4 {{ $i <= $t->rating ? 'fill-current' : 'text-slate-300 dark:text-white/15' }}" />
+                                            @endfor
+                                        </div>
+                                        <x-icon name="quote" class="size-8 text-accent/25" />
+                                    </div>
+                                    <blockquote class="tm-quote" title="{{ $t->content }}">“{{ $t->content }}”</blockquote>
+                                    <figcaption class="mt-auto flex items-center gap-3 border-t border-slate-200/70 pt-5 dark:border-white/[0.06]">
+                                        @if ($t->avatar_url)
+                                            <img src="{{ $t->avatar_url }}" alt="{{ $t->name }}" class="size-11 shrink-0 rounded-full object-cover ring-2 ring-accent/20" loading="lazy">
+                                        @else
+                                            <span class="grid size-11 shrink-0 place-items-center rounded-full text-sm font-bold text-white" style="background-image: linear-gradient(135deg, var(--accent), var(--accent-2))">{{ $t->initials }}</span>
+                                        @endif
+                                        <div class="min-w-0">
+                                            <p class="truncate font-semibold text-slate-900 dark:text-white">{{ $t->name }}</p>
+                                            <p class="truncate text-sm text-slate-500">{{ collect([$t->position, $t->company])->filter()->join(' · ') }}</p>
+                                        </div>
+                                    </figcaption>
+                                </figure>
+                            @endforeach
+                        @endfor
+                    </div>
                 </div>
             @endif
 
@@ -614,7 +626,7 @@
                 <div class="reveal mx-auto mt-12 max-w-2xl">
                     <details class="card group p-6" @if($errors->recommend->any()) open @endif>
                         <summary class="flex cursor-pointer list-none items-center justify-between font-semibold text-slate-900 dark:text-white">
-                            <span class="flex items-center gap-2"><x-icon name="award" class="text-accent" /> Worked with me? Leave a recommendation</span>
+                            <span class="flex items-center gap-2"><x-icon name="award" class="size-5 shrink-0 text-accent" /> Worked with me? Leave a recommendation</span>
                             <x-icon name="plus" class="size-5 transition group-open:rotate-45" />
                         </summary>
                         <form method="POST" action="{{ route('recommend.store') }}" class="mt-6 grid gap-4 sm:grid-cols-2" data-ajax-form data-success-title="Thank you!">

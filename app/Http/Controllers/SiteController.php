@@ -7,6 +7,7 @@ use App\Models\Experience;
 use App\Models\Message;
 use App\Models\Post;
 use App\Models\Project;
+use App\Models\ProjectCategory;
 use App\Models\Service;
 use App\Models\Setting;
 use App\Models\Skill;
@@ -29,7 +30,7 @@ class SiteController extends Controller
             'spotlight' => $spotlight,
             'projects' => Project::published()->when($spotlight, fn ($q) => $q->whereKeyNot($spotlight->id))
                 ->ordered()->take((int) setting('home_projects_count', 6))->get(),
-            'projectCategories' => Project::published()->whereNotNull('category')->distinct()->pluck('category'),
+            'projectCategories' => $this->usedCategories(),
             'testimonials' => Testimonial::where('is_visible', true)->ordered()->get(),
             'posts' => Post::published()->take(3)->get(),
         ]);
@@ -47,7 +48,7 @@ class SiteController extends Controller
 
         return view('site.projects', [
             'projects' => $projects,
-            'categories' => Project::published()->whereNotNull('category')->distinct()->pluck('category'),
+            'categories' => $this->usedCategories(),
         ]);
     }
 
@@ -158,5 +159,15 @@ class SiteController extends Controller
         $name = str(setting('name', 'cv'))->slug().'-cv.'.$ext;
 
         return response()->download(public_path($path), $name);
+    }
+
+    /** Categories that have at least one published project, in the admin's order. */
+    private function usedCategories()
+    {
+        $used = Project::published()->whereNotNull('category')->distinct()->pluck('category');
+        $ordered = ProjectCategory::ordered()->pluck('name');
+
+        // Anything not in the managed list (older data) goes last instead of disappearing.
+        return $ordered->intersect($used)->values()->merge($used->diff($ordered)->sort()->values());
     }
 }

@@ -652,3 +652,28 @@
 /* Horizontal tab strips: still scroll on small phones, but without a visible scrollbar */
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ---------- Recommendations: equal cards in an endless, auto-scrolling strip ---------- */
+.tm-marquee { position: relative; overflow: hidden; padding: .75rem 0 1.5rem; mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent); }
+.tm-track { display: flex; width: max-content; animation: tm-scroll var(--tm-duration, 30s) linear infinite; }
+.tm-marquee:hover .tm-track, .tm-marquee:focus-within .tm-track { animation-play-state: paused; }
+@keyframes tm-scroll { to { transform: translateX(calc(-100% / var(--tm-copies, 2))); } }
+
+/* Every card has the same size; a margin (not a flex gap) keeps each copy exactly the same width. */
+.tm-card { position: relative; display: flex; flex-direction: column; flex-shrink: 0; width: 22rem; height: 17rem; margin-right: 1.5rem; padding: 1.6rem; border-radius: 1.5rem; border: 1px solid var(--color-slate-200); background: rgb(255 255 255 / .9); box-shadow: 0 1px 2px rgb(15 23 42 / .04); transition: transform .4s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .4s; }
+.dark .tm-card { border-color: rgb(255 255 255 / .07); background: rgb(255 255 255 / .03); }
+.tm-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 3px; border-radius: 1.5rem 1.5rem 0 0; background-image: linear-gradient(90deg, var(--accent), var(--accent-2)); opacity: 0; transition: opacity .3s; }
+.tm-card:hover { transform: translateY(-6px); border-color: color-mix(in oklab, var(--accent) 40%, transparent); box-shadow: 0 24px 44px -22px color-mix(in oklab, var(--accent) 55%, transparent); }
+.tm-card:hover::before { opacity: 1; }
+.tm-quote { margin-top: 1rem; font-size: .95rem; line-height: 1.7; color: var(--color-slate-700); display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.dark .tm-quote { color: var(--color-slate-300); }
+@media (max-width: 640px) { .tm-card { width: 18rem; height: 18rem; padding: 1.35rem; } }
+
+/* Reduced motion: no auto-scroll, swipe instead */
+@media (prefers-reduced-motion: reduce) {
+    .tm-marquee { overflow-x: auto; mask-image: none; -webkit-mask-image: none; }
+    .tm-track { animation: none; }
+    .tm-card[aria-hidden="true"] { display: none; }
+}
+/* Let the strip run edge to edge even though it sits inside the page container */
+.tm-bleed { margin-inline: calc(50% - 50vw); }

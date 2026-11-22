@@ -8,6 +8,7 @@
         ],
         'Content' => [
             ['Projects', 'admin.projects.index', 'folder', null, 'admin.projects.*'],
+            ['Categories', 'admin.categories.index', 'tag', null, 'admin.categories.*'],
             ['Services', 'admin.services.index', 'sparkles', null, 'admin.services.*'],
             ['Skills', 'admin.skills.index', 'layers', null, 'admin.skills.*'],
             ['Experience', 'admin.experiences.index', 'briefcase', null, 'admin.experiences.*'],

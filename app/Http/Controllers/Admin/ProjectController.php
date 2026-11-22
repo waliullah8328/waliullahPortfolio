@@ -78,7 +78,7 @@ class ProjectController extends Controller
         $data = $request->validate([
             'title' => ['required', 'string', 'max:150'],
             'slug' => ['nullable', 'string', 'max:160'],
-            'category' => ['nullable', 'string', 'max:60'],
+            'category' => ['nullable', 'string', 'exists:project_categories,name'],
             'type' => ['required', 'in:'.implode(',', array_keys(Project::TYPES))],
             'app_store_url' => ['nullable', 'url', 'max:255'],
             'play_store_url' => ['nullable', 'url', 'max:255'],

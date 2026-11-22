@@ -27,9 +27,19 @@
                     <p class="help">Leave empty to generate from the title.</p>
                 </div>
                 <div>
+                    @php
+                        $categoryNames = \App\Models\ProjectCategory::ordered()->pluck('name');
+                        $currentCategory = old('category', $project->category);
+                    @endphp
                     <label class="label" for="category">Category</label>
-                    <input id="category" name="category" value="{{ old('category', $project->category) }}" class="input" placeholder="Web App, Mobile, UI/UX..." list="cats">
-                    <datalist id="cats">@foreach (\App\Models\Project::whereNotNull('category')->distinct()->pluck('category') as $c)<option value="{{ $c }}">@endforeach</datalist>
+                    <select id="category" name="category" class="input">
+                        <option value="">No category</option>
+                        @foreach ($categoryNames as $c)
+                            <option value="{{ $c }}" @selected($currentCategory === $c)>{{ $c }}</option>
+                        @endforeach
+                    </select>
+                    @error('category')<p class="error">{{ $message }}</p>@enderror
+                    <p class="help"><a href="{{ route('admin.categories.index') }}" class="font-medium text-accent hover:underline">Manage categories</a> to add or rename them.</p>
                 </div>
             </div>
             <div>
