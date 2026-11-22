@@ -25,6 +25,22 @@
                 @include('site.partials.project-media', ['project' => $project, 'large' => true])
             </div>
 
+            @php $shots = array_values(array_filter([$project->image, $project->screen_image])); @endphp
+            @if ($shots)
+                <section class="reveal mt-12">
+                    <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Screenshots</h2>
+                    <div class="mt-4 flex flex-wrap justify-center gap-6">
+                        @foreach ($shots as $shot)
+                            <a href="{{ \App\Support\Media::url($shot, false, 2400) }}" target="_blank" rel="noopener" title="Open full size"
+                               class="block overflow-hidden rounded-2xl border border-slate-200 shadow-xl shadow-accent/10 transition hover:-translate-y-1 dark:border-white/10">
+                                <img src="{{ \App\Support\Media::url($shot, false, 1400) }}" alt="{{ $project->title }} screenshot {{ $loop->iteration }}" loading="lazy"
+                                     class="block h-auto max-h-[680px] w-auto max-w-full">
+                            </a>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+
             <div class="mt-12 grid gap-10 lg:grid-cols-[1fr_240px]">
                 <div class="prose-content reveal">{!! $project->html !!}</div>
                 @if ($project->tech_list)

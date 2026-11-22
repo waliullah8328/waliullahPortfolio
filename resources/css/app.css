@@ -365,6 +365,10 @@
 .pm-large .pm-phone-center { width: 24%; }
 .pm-large .pm-phone-back { width: 21%; }
 .pm-phone-back.has-img { opacity: 1; }
+/* Detail page, app only: a taller stage with bigger phones so the screenshots are readable */
+.pm-stage.pm-large.pm-app { aspect-ratio: 4 / 3; }
+.pm-large.pm-app .pm-phone-center { width: 31%; top: 7%; }
+.pm-large.pm-app .pm-phone-back { width: 28%; top: 11%; }
 .pm-phone-back .pm-screen { background-image: linear-gradient(160deg, color-mix(in oklab, var(--accent) 30%, transparent), color-mix(in oklab, var(--accent-2) 20%, transparent)); }
 
 /* ---------- Hero phone (Flutter profile app) ---------- */

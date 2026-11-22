@@ -15,7 +15,7 @@
     $showBrowser = $project->type !== 'app';
     $showPhone = $project->is_app;
 @endphp
-<div class="pm-stage {{ $large ? 'pm-large' : '' }}">
+<div class="pm-stage {{ $large ? 'pm-large' : '' }} {{ $showBrowser ? '' : 'pm-app' }}">
     <div class="pm-grid"></div>
 
     @if ($showBrowser)
