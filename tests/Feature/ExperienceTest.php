@@ -22,7 +22,9 @@ class ExperienceTest extends TestCase
         $this->assertSame(17, Experience::totalMonths([$this->entry('2024-12-01', '2026-04-30')]));
         $this->assertSame(19, Experience::totalMonths([$this->entry('2024-12-01', '2026-04-30'), $this->entry('2026-03-01', '2026-06-30')]));
         $this->assertSame(18, Experience::totalMonths([$this->entry('2022-01-01', '2022-12-31'), $this->entry('2024-01-01', '2024-06-30')]));
-        $this->assertSame('2 yrs 1 mo', Experience::humanMonths(25));
+        $this->assertSame('2 yrs 1 month', Experience::humanMonths(25));
+        $this->assertSame('1 yr 2 months', Experience::humanMonths(14));
+        $this->assertSame('5 months', Experience::humanMonths(5));
     }
 
     public function test_home_shows_total_experience_work_type_and_address(): void

@@ -68,17 +68,17 @@ class Experience extends Model
         return $total;
     }
 
-    /** 1 -> "1 mo", 14 -> "1 yr 2 mos", 24 -> "2 yrs". */
+    /** 1 -> "1 month", 14 -> "1 yr 2 months", 24 -> "2 yrs". */
     public static function humanMonths(int $months): string
     {
         $y = intdiv($months, 12);
         $m = $months % 12;
         $parts = array_filter([
             $y ? $y.' yr'.($y > 1 ? 's' : '') : null,
-            $m ? $m.' mo'.($m > 1 ? 's' : '') : null,
+            $m ? $m.' month'.($m > 1 ? 's' : '') : null,
         ]);
 
-        return implode(' ', $parts) ?: '1 mo';
+        return implode(' ', $parts) ?: '1 month';
     }
 
     /** Up to two initials of the organization, used as a logo placeholder. */
