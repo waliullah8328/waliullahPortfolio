@@ -11,9 +11,9 @@
         <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             @foreach ($certificates as $cert)
                 <div class="card flex flex-col overflow-hidden {{ $cert->is_visible ? '' : 'opacity-60' }}">
-                    <div class="relative aspect-[16/10] bg-slate-100 dark:bg-white/5">
+                    <div class="relative aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-white/5">
                         @if ($cert->image_url)
-                            <img src="{{ $cert->image_url }}" alt="" referrerpolicy="no-referrer" class="size-full object-cover">
+                            <img src="{{ $cert->image_url }}" alt="" referrerpolicy="no-referrer" loading="lazy" class="absolute inset-0 size-full object-cover object-top">
                         @else
                             <div class="grid size-full place-items-center text-slate-400"><x-icon name="badge-check" class="size-10" /></div>
                         @endif

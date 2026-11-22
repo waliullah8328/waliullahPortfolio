@@ -14,9 +14,12 @@
         <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             @foreach ($projects as $project)
                 <div class="card flex flex-col overflow-hidden">
-                    <div class="relative aspect-[16/9] bg-slate-100 dark:bg-white/5">
+                    {{-- overflow-hidden matters: without it a tall phone screenshot stretches the 16:9 box --}}
+                    <div class="relative aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-white/5">
                         @if ($project->image_url)
-                            <img src="{{ $project->image_url }}" alt="" class="size-full object-cover">
+                            @php $thumb = \App\Support\Media::url($project->image, false, 800); @endphp
+                            <img src="{{ $thumb }}" alt="" aria-hidden="true" referrerpolicy="no-referrer" class="absolute inset-0 size-full scale-110 object-cover opacity-50 blur-xl">
+                            <img src="{{ $thumb }}" alt="{{ $project->title }}" referrerpolicy="no-referrer" loading="lazy" class="absolute inset-0 size-full object-contain p-3 drop-shadow-xl">
                         @else
                             <div class="grid size-full place-items-center text-slate-400"><x-icon name="image" class="size-10" /></div>
                         @endif
