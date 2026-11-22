@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Experience extends Model
 {
     protected $fillable = [
-        'type', 'title', 'organization', 'location', 'start_date', 'end_date',
+        'type', 'title', 'organization', 'location', 'address', 'start_date', 'end_date',
         'is_current', 'description', 'sort_order',
     ];
 
@@ -35,6 +35,50 @@ class Experience extends Model
         $lines = preg_split('/\r\n|\r|\n/', (string) $this->description);
 
         return array_values(array_filter(array_map(fn ($l) => trim(ltrim(trim($l), '-*')), $lines)));
+    }
+
+    /**
+     * Total experience across entries in whole months. Overlapping periods are counted once,
+     * and both the start and end month count (Dec 2024 - Apr 2026 = 17 months).
+     */
+    public static function totalMonths(iterable $entries): int
+    {
+        $ranges = collect($entries)
+            ->filter(fn (self $e) => $e->start_date)
+            ->map(function (self $e) {
+                $end = $e->is_current || ! $e->end_date ? now() : $e->end_date;
+                $from = $e->start_date->year * 12 + $e->start_date->month;
+                $to = $end->year * 12 + $end->month;
+
+                return [$from, max($from, $to)];
+            })
+            ->sortBy(0)
+            ->values();
+
+        $total = 0;
+        $cursor = null; // last month already counted
+        foreach ($ranges as [$from, $to]) {
+            $from = $cursor === null ? $from : max($from, $cursor + 1);
+            if ($to >= $from) {
+                $total += $to - $from + 1;
+                $cursor = $to;
+            }
+        }
+
+        return $total;
+    }
+
+    /** 1 -> "1 mo", 14 -> "1 yr 2 mos", 24 -> "2 yrs". */
+    public static function humanMonths(int $months): string
+    {
+        $y = intdiv($months, 12);
+        $m = $months % 12;
+        $parts = array_filter([
+            $y ? $y.' yr'.($y > 1 ? 's' : '') : null,
+            $m ? $m.' mo'.($m > 1 ? 's' : '') : null,
+        ]);
+
+        return implode(' ', $parts) ?: '1 mo';
     }
 
     /** Up to two initials of the organization, used as a logo placeholder. */

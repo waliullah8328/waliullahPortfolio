@@ -19,6 +19,7 @@
                                 <div class="min-w-0 flex-1">
                                     <p class="font-medium text-slate-900 dark:text-white">{{ $exp->title }}</p>
                                     <p class="text-sm text-slate-500">{{ $exp->organization }}@if($exp->location) · {{ $exp->location }}@endif</p>
+                                    @if ($exp->address)<p class="text-xs text-slate-400">{{ $exp->address }}</p>@endif
                                     <p class="mt-1 text-xs font-medium text-accent">{{ $exp->period }}</p>
                                 </div>
                                 <a href="{{ route('admin.experiences.edit', $exp) }}" class="text-slate-400 hover:text-accent" title="Edit"><x-icon name="edit" class="size-4" /></a>

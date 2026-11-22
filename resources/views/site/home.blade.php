@@ -337,6 +337,7 @@
     @php
         $workItems = $experiences['work'] ?? collect();
         $eduItems = $experiences['education'] ?? collect();
+        $workMonths = \App\Models\Experience::totalMonths($workItems);
         $groups = [
             'work' => ['Work experience', 'briefcase', $workItems->count().' '.str('role')->plural($workItems->count())],
             'education' => ['Education', 'graduation', $eduItems->count().' '.str('qualification')->plural($eduItems->count())],
@@ -356,11 +357,17 @@
                 @foreach ($groups as $type => [$label, $icon, $count])
                     @if ($experiences->has($type))
                         <div>
-                            <div class="reveal mb-8">
+                            <div class="reveal mb-8 flex items-center justify-between gap-4">
                                 <h3 class="flex items-center gap-3 text-xl font-semibold">
                                     <span class="xp-head-icon"><x-icon :name="$icon" class="size-5" /></span>
                                     <span>{{ $label }}<span class="block text-xs font-medium text-slate-500">{{ $count }}</span></span>
                                 </h3>
+                                @if ($type === 'work' && $workMonths >= 1)
+                                    <span class="xp-total" title="Total work experience">
+                                        <span class="xp-total-value">{{ \App\Models\Experience::humanMonths($workMonths) }}</span>
+                                        <span class="xp-total-label">experience</span>
+                                    </span>
+                                @endif
                             </div>
 
                             <ol class="xp-line">
@@ -376,11 +383,17 @@
                                                         @if ($exp->is_current)
                                                             <span class="xp-current"><i></i> Current</span>
                                                         @endif
+                                                        @if ($type === 'work' && $exp->location)
+                                                            <span class="xp-mode">{{ $exp->location }}</span>
+                                                        @endif
                                                     </div>
                                                     <h4 class="xp-title mt-2.5 text-lg font-semibold leading-snug">{{ $exp->title }}</h4>
                                                     <p class="mt-0.5 text-sm font-medium text-slate-600 dark:text-slate-300">{{ $exp->organization }}</p>
-                                                    @if ($exp->location)
-                                                        <p class="mt-2 inline-flex items-center gap-1 text-xs text-slate-500"><x-icon name="map-pin" class="size-3.5" /> {{ $exp->location }}</p>
+                                                    {{-- Work: "location" is the work type (shown as a chip above), so only the address goes here.
+                                                         Education: "location" has always held the address. --}}
+                                                    @php $place = $exp->address ?: ($type === 'education' ? $exp->location : null); @endphp
+                                                    @if ($place)
+                                                        <p class="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-slate-500"><x-icon name="map-pin" class="mt-px size-3.5 shrink-0" /> <span>{{ $place }}</span></p>
                                                     @endif
                                                 </div>
                                             </div>

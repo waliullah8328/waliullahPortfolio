@@ -51,6 +51,7 @@ class ExperienceController extends Controller
             'title' => ['required', 'string', 'max:150'],
             'organization' => ['required', 'string', 'max:150'],
             'location' => ['nullable', 'string', 'max:100'],
+            'address' => ['nullable', 'string', 'max:255'],
             'start_date' => ['required', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'description' => ['nullable', 'string', 'max:5000'],

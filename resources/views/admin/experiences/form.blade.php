@@ -17,7 +17,15 @@
         <div class="grid gap-5 sm:grid-cols-2">
             <div><label class="label" for="title">Job title / Degree *</label><input id="title" name="title" value="{{ old('title', $experience->title) }}" class="input" required></div>
             <div><label class="label" for="organization">Company / Institution *</label><input id="organization" name="organization" value="{{ old('organization', $experience->organization) }}" class="input" required></div>
-            <div><label class="label" for="location">Location</label><input id="location" name="location" value="{{ old('location', $experience->location) }}" class="input" placeholder="Remote"></div>
+            <div class="sm:col-span-2">
+                <label class="label" for="address">Company / institution address</label>
+                <input id="address" name="address" value="{{ old('address', $experience->address) }}" class="input" placeholder="House 12, Road 5, Dhanmondi, Dhaka">
+            </div>
+            <div>
+                <label class="label" for="location">Work type</label>
+                <input id="location" name="location" value="{{ old('location', $experience->location) }}" class="input" placeholder="On Site, Remote, Hybrid" list="work-types">
+                <datalist id="work-types"><option value="On Site"><option value="Remote"><option value="Hybrid"></datalist>
+            </div>
             <div><label class="label" for="sort_order">Sort order</label><input id="sort_order" type="number" name="sort_order" value="{{ old('sort_order', $experience->sort_order ?? 0) }}" class="input"></div>
             <div><label class="label" for="start_date">Start date *</label><input id="start_date" type="date" name="start_date" value="{{ old('start_date', $experience->start_date?->format('Y-m-d')) }}" class="input" required></div>
             <div><label class="label" for="end_date">End date</label><input id="end_date" type="date" name="end_date" value="{{ old('end_date', $experience->end_date?->format('Y-m-d')) }}" class="input"></div>
