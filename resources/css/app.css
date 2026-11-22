@@ -675,5 +675,3 @@
     .tm-track { animation: none; }
     .tm-card[aria-hidden="true"] { display: none; }
 }
-/* Let the strip run edge to edge even though it sits inside the page container */
-.tm-bleed { margin-inline: calc(50% - 50vw); }

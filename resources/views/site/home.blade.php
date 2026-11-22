@@ -576,7 +576,7 @@
 
     {{-- RECOMMENDATIONS --}}
     @if (setting_on('show_testimonials'))
-    <section id="testimonials" class="section scroll-mt-16 overflow-x-clip">
+    <section id="testimonials" class="section scroll-mt-16">
         <div class="container-x">
             <div class="reveal mx-auto max-w-2xl text-center">
                 <span class="eyebrow">Recommendations</span>
@@ -590,7 +590,7 @@
                     // Enough copies to cover a 4K screen while one copy slides away (~11 cards).
                     $copies = max(2, 1 + (int) ceil(11 / $testimonials->count()));
                 @endphp
-                <div class="reveal tm-marquee tm-bleed mt-14" style="--tm-copies: {{ $copies }}; --tm-duration: {{ $testimonials->count() * 9 }}s">
+                <div class="reveal tm-marquee mt-14" style="--tm-copies: {{ $copies }}; --tm-duration: {{ $testimonials->count() * 9 }}s">
                     <div class="tm-track">
                         @for ($copy = 0; $copy < $copies; $copy++)
                             @foreach ($testimonials as $t)
