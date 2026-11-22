@@ -333,3 +333,23 @@ document.querySelectorAll('form[data-ajax-form]').forEach((form) => {
 document.querySelectorAll('[data-flash]').forEach((el) => {
     setTimeout(() => { el.style.transition = 'opacity .4s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 400); }, 4000);
 });
+
+// Certificate lightbox -----------------------------------------------------
+const lightbox = document.querySelector('[data-lightbox-dialog]');
+if (lightbox) {
+    const img = lightbox.querySelector('[data-lightbox-img]');
+    const caption = lightbox.querySelector('[data-lightbox-caption]');
+    document.querySelectorAll('[data-lightbox]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            img.src = btn.dataset.lightbox;
+            img.alt = btn.dataset.caption || '';
+            caption.textContent = btn.dataset.caption || '';
+            lightbox.showModal();
+        });
+    });
+    // Close on the X button or a click outside the image.
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox || e.target.closest('[data-lightbox-close]')) lightbox.close();
+    });
+    lightbox.addEventListener('close', () => { img.src = ''; });
+}

@@ -40,6 +40,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('services', Admin\ServiceController::class)->except('show');
         Route::resource('projects', Admin\ProjectController::class)->except('show')->scoped(['project' => 'id']);
         Route::resource('experiences', Admin\ExperienceController::class)->except('show');
+        Route::resource('certificates', Admin\CertificateController::class)->except('show');
         Route::post('posts/preview', [Admin\PostController::class, 'preview'])->name('posts.preview');
         Route::resource('posts', Admin\PostController::class)->except('show')->scoped(['post' => 'id']);
         Route::patch('testimonials/{testimonial}/toggle', [Admin\TestimonialController::class, 'toggle'])->name('testimonials.toggle');

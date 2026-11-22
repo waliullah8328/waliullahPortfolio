@@ -410,6 +410,89 @@
     </section>
     @endif
 
+    {{-- CERTIFICATIONS --}}
+    @if (setting_on('show_certificates') && $certificates->isNotEmpty())
+    <section id="certificates" class="section relative scroll-mt-16 overflow-hidden">
+        <div class="bg-grid absolute inset-0 -z-10 opacity-60"></div>
+        <div class="container-x">
+            <div class="reveal flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
+                <div class="max-w-xl">
+                    <span class="eyebrow"><x-icon name="badge-check" class="size-3.5" /> Certifications</span>
+                    <h2 class="section-title">Licenses &amp; <span class="gradient-text">certifications</span></h2>
+                    <p class="mt-4 text-slate-600 dark:text-slate-400">Courses and credentials that back up the work. Click a certificate to see it full size.</p>
+                </div>
+                <div class="cert-count">
+                    <span class="font-display text-3xl font-bold text-slate-900 dark:text-white" data-count="{{ $certificates->count() }}">0</span>
+                    <span class="text-xs font-medium uppercase tracking-wide text-slate-500">{{ str('certificate')->plural($certificates->count()) }}</span>
+                </div>
+            </div>
+
+            <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach ($certificates as $cert)
+                    <article class="cert-card reveal group">
+                        @if ($cert->image_url)
+                            <button type="button" class="cert-media" data-lightbox="{{ $cert->image_full_url }}" data-caption="{{ $cert->title }} · {{ $cert->issuer }}" aria-label="View {{ $cert->title }} certificate">
+                                <img src="{{ $cert->image_url }}" alt="{{ $cert->title }} certificate" loading="lazy" referrerpolicy="no-referrer">
+                                <span class="cert-shine" aria-hidden="true"></span>
+                                <span class="cert-view"><x-icon name="eye" class="size-4" /> View certificate</span>
+                            </button>
+                        @else
+                            <div class="cert-media cert-placeholder" aria-hidden="true">
+                                <div class="cert-seal"><x-icon name="badge-check" class="size-9" /></div>
+                                <p class="mt-3 line-clamp-2 px-6 text-center font-display text-sm font-semibold text-slate-700 dark:text-slate-200">{{ $cert->title }}</p>
+                                <span class="cert-shine"></span>
+                            </div>
+                        @endif
+
+                        <div class="flex flex-1 flex-col p-5 sm:p-6">
+                            <div class="flex items-center gap-3">
+                                <span class="cert-logo" aria-hidden="true">{{ $cert->initials }}</span>
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $cert->issuer }}</p>
+                                    @if ($cert->issued_at)
+                                        <p class="text-xs text-slate-500">Issued {{ $cert->issued_at->format('M Y') }}@if ($cert->expires_at) · {{ $cert->is_expired ? 'Expired' : 'Valid until' }} {{ $cert->expires_at->format('M Y') }}@endif</p>
+                                    @endif
+                                </div>
+                                @if ($cert->credential_url && ! $cert->is_expired)
+                                    <span class="cert-verified" title="Has a verification link"><x-icon name="badge-check" class="size-3.5" /> Verified</span>
+                                @endif
+                            </div>
+
+                            <h3 class="mt-4 text-lg font-semibold leading-snug transition group-hover:text-accent">{{ $cert->title }}</h3>
+
+                            @if ($cert->skill_list)
+                                <div class="mt-3 flex flex-wrap gap-1.5">
+                                    @foreach ($cert->skill_list as $skill)<span class="pc-chip">{{ $skill }}</span>@endforeach
+                                </div>
+                            @endif
+
+                            @if ($cert->credential_id || $cert->credential_url)
+                                <div class="min-h-5 flex-1"></div>
+                                <div class="flex items-center justify-between gap-3 border-t border-slate-200/70 pt-4 dark:border-white/[0.06]">
+                                    @if ($cert->credential_id)
+                                        <span class="min-w-0 truncate font-mono text-[11px] text-slate-500" title="Credential ID">ID: {{ $cert->credential_id }}</span>
+                                    @else
+                                        <span></span>
+                                    @endif
+                                    @if ($cert->credential_url)
+                                        <a href="{{ $cert->credential_url }}" target="_blank" rel="noopener" class="cert-verify">Verify <x-icon name="arrow-up-right" class="size-3.5" /></a>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    <dialog class="cert-lightbox" data-lightbox-dialog aria-label="Certificate">
+        <button type="button" class="cert-lightbox-close" data-lightbox-close aria-label="Close"><x-icon name="x" class="size-5" /></button>
+        <img src="" alt="" referrerpolicy="no-referrer" data-lightbox-img>
+        <p class="mt-3 text-center text-sm text-slate-300" data-lightbox-caption></p>
+    </dialog>
+    @endif
+
     {{-- PROJECTS --}}
     @if (setting_on('show_projects') && ($spotlight || $projects->isNotEmpty()))
     <section id="projects" class="section relative scroll-mt-16 overflow-hidden bg-white/50 dark:bg-white/[0.015]">

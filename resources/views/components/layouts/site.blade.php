@@ -8,6 +8,7 @@
         ['label' => 'Services', 'href' => $home.'#services', 'on' => setting_on('show_services')],
         ['label' => 'Skills', 'href' => $home.'#skills', 'on' => setting_on('show_skills')],
         ['label' => 'Experience', 'href' => $home.'#experience', 'on' => setting_on('show_experience')],
+        ['label' => 'Certificates', 'href' => $home.'#certificates', 'on' => setting_on('show_certificates') && \App\Models\Certificate::visible()->exists()],
         ['label' => 'Projects', 'href' => route('projects.index'), 'on' => setting_on('show_projects')],
         ['label' => 'Blog', 'href' => route('blog.index'), 'on' => setting_on('show_blog')],
         ['label' => 'Contact', 'href' => $home.'#contact', 'on' => setting_on('show_contact')],

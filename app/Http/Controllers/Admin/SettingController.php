@@ -67,6 +67,7 @@ class SettingController extends Controller
                 'show_services' => ['type' => 'toggle', 'label' => 'Show Services (What I do) section'],
                 'show_skills' => ['type' => 'toggle', 'label' => 'Show Skills section'],
                 'show_experience' => ['type' => 'toggle', 'label' => 'Show Experience section'],
+                'show_certificates' => ['type' => 'toggle', 'label' => 'Show Certifications section'],
                 'show_projects' => ['type' => 'toggle', 'label' => 'Show Projects section'],
                 'show_testimonials' => ['type' => 'toggle', 'label' => 'Show Recommendations section'],
                 'allow_recommendations' => ['type' => 'toggle', 'label' => 'Let visitors submit recommendations'],

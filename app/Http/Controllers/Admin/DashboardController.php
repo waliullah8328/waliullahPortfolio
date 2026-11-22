@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Certificate;
 use App\Models\Experience;
 use App\Models\Message;
 use App\Models\Post;
@@ -19,6 +20,7 @@ class DashboardController extends Controller
                 ['label' => 'Projects', 'value' => Project::count(), 'icon' => 'folder', 'route' => 'admin.projects.index'],
                 ['label' => 'Skills', 'value' => Skill::count(), 'icon' => 'layers', 'route' => 'admin.skills.index'],
                 ['label' => 'Experience', 'value' => Experience::count(), 'icon' => 'briefcase', 'route' => 'admin.experiences.index'],
+                ['label' => 'Certificates', 'value' => Certificate::count(), 'icon' => 'badge-check', 'route' => 'admin.certificates.index'],
                 ['label' => 'Blog posts', 'value' => Post::count(), 'icon' => 'file-text', 'route' => 'admin.posts.index'],
                 ['label' => 'Recommendations', 'value' => Testimonial::count(), 'icon' => 'award', 'route' => 'admin.testimonials.index'],
                 ['label' => 'Unread messages', 'value' => Message::where('is_read', false)->count(), 'icon' => 'mail', 'route' => 'admin.messages.index'],

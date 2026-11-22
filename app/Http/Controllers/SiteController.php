@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Certificate;
 use App\Models\Experience;
 use App\Models\Message;
 use App\Models\Post;
@@ -24,6 +25,7 @@ class SiteController extends Controller
             'services' => Service::where('is_visible', true)->ordered()->get(),
             'skillGroups' => Skill::where('is_visible', true)->ordered()->get()->groupBy('category'),
             'experiences' => Experience::ordered()->get()->groupBy('type'),
+            'certificates' => Certificate::visible()->ordered()->get(),
             'spotlight' => $spotlight,
             'projects' => Project::published()->when($spotlight, fn ($q) => $q->whereKeyNot($spotlight->id))
                 ->ordered()->take((int) setting('home_projects_count', 6))->get(),

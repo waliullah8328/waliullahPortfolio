@@ -11,6 +11,7 @@
             ['Services', 'admin.services.index', 'sparkles', null, 'admin.services.*'],
             ['Skills', 'admin.skills.index', 'layers', null, 'admin.skills.*'],
             ['Experience', 'admin.experiences.index', 'briefcase', null, 'admin.experiences.*'],
+            ['Certificates', 'admin.certificates.index', 'badge-check', null, 'admin.certificates.*'],
             ['Blog', 'admin.posts.index', 'file-text', null, 'admin.posts.*'],
         ],
         'Inbox' => [
