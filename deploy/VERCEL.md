@@ -53,7 +53,7 @@ Project **Settings → Environment Variables**-e ei duto add korun (Production):
 **Deployments** tab-e shesh deploy-er **⋯ → Redeploy** chapun. Tarpor site ar `/admin` khule dekhun.
 
 ## Pore ja ja korben
-- **Code bodlale:** `git push` korlei auto deploy hobe.
+- **Code bodlale:** `git push` korlei auto deploy hobe. Notun migration thakle container start howar shomoy nije theke chole jay, Neon-e alada kore chalate hoy na.
 - **Content bodlale:** live admin (`/admin`) theke korben. Content Neon-e thake, deploy korleo muche na.
 - **Chhobi ba PDF:** shob shomoy link hishebe din. Google Drive-e sharing "Anyone with the link" kora thakte hobe.
 - 5 minute keu site-e na ele container ghumiye pore. Tarpor prothom visit ektu slow hote pare.

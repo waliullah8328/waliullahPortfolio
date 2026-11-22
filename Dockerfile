@@ -52,4 +52,6 @@ RUN php artisan view:cache && php artisan event:cache \
     && chown -R www-data:www-data /config/caddy /data/caddy
 
 USER www-data
-CMD ["frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile"]
+# Apply pending migrations on every start, so a new column ships with the code that needs it.
+# A failed migration is logged but does not stop the site from starting.
+CMD ["sh", "-c", "php artisan migrate --force --no-interaction || echo \"migrate failed\" >&2; exec frankenphp run --config /etc/frankenphp/Caddyfile"]
