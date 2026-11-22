@@ -337,7 +337,6 @@
     @php
         $workItems = $experiences['work'] ?? collect();
         $eduItems = $experiences['education'] ?? collect();
-        $workMonths = $workItems->sum(fn ($e) => $e->months);
         $groups = [
             'work' => ['Work experience', 'briefcase', $workItems->count().' '.str('role')->plural($workItems->count())],
             'education' => ['Education', 'graduation', $eduItems->count().' '.str('qualification')->plural($eduItems->count())],
@@ -357,14 +356,11 @@
                 @foreach ($groups as $type => [$label, $icon, $count])
                     @if ($experiences->has($type))
                         <div>
-                            <div class="reveal mb-8 flex items-center justify-between gap-4">
+                            <div class="reveal mb-8">
                                 <h3 class="flex items-center gap-3 text-xl font-semibold">
                                     <span class="xp-head-icon"><x-icon :name="$icon" class="size-5" /></span>
                                     <span>{{ $label }}<span class="block text-xs font-medium text-slate-500">{{ $count }}</span></span>
                                 </h3>
-                                @if ($type === 'work' && $workMonths >= 1)
-                                    <span class="xp-total"><x-icon name="clock" class="size-3.5" /> {{ \App\Models\Experience::humanMonths($workMonths) }}</span>
-                                @endif
                             </div>
 
                             <ol class="xp-line">
@@ -383,10 +379,9 @@
                                                     </div>
                                                     <h4 class="xp-title mt-2.5 text-lg font-semibold leading-snug">{{ $exp->title }}</h4>
                                                     <p class="mt-0.5 text-sm font-medium text-slate-600 dark:text-slate-300">{{ $exp->organization }}</p>
-                                                    <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
-                                                        @if ($exp->location)<span class="inline-flex items-center gap-1"><x-icon name="map-pin" class="size-3.5" /> {{ $exp->location }}</span>@endif
-                                                        @if ($type === 'work' && $exp->months >= 1)<span class="inline-flex items-center gap-1"><x-icon name="clock" class="size-3.5" /> {{ \App\Models\Experience::humanMonths($exp->months) }}</span>@endif
-                                                    </div>
+                                                    @if ($exp->location)
+                                                        <p class="mt-2 inline-flex items-center gap-1 text-xs text-slate-500"><x-icon name="map-pin" class="size-3.5" /> {{ $exp->location }}</p>
+                                                    @endif
                                                 </div>
                                             </div>
                                             @if (count($exp->points) === 1)
