@@ -24,7 +24,7 @@ class SiteController extends Controller
 
         return view('site.home', [
             'services' => Service::where('is_visible', true)->ordered()->get(),
-            'skillGroups' => Skill::where('is_visible', true)->ordered()->get()->groupBy('category'),
+            'skillGroups' => $this->orderSkillGroups(Skill::where('is_visible', true)->ordered()->get()->groupBy('category')),
             'experiences' => Experience::ordered()->get()->groupBy('type'),
             'certificates' => Certificate::visible()->ordered()->get(),
             'spotlight' => $spotlight,
@@ -34,6 +34,27 @@ class SiteController extends Controller
             'testimonials' => Testimonial::where('is_visible', true)->ordered()->get(),
             'posts' => Post::published()->take(3)->get(),
         ]);
+    }
+
+    /**
+     * Skill tabs in a fixed order: Mobile, then State & Architecture, then Web & Backend.
+     * Matched by keyword so a renamed category still lands in place; any others follow in their own order.
+     */
+    private function orderSkillGroups($groups)
+    {
+        $rank = function (string $category): int {
+            $c = mb_strtolower($category);
+
+            return match (true) {
+                str_contains($c, 'mobile') => 0,
+                str_contains($c, 'state') || str_contains($c, 'architecture') => 1,
+                str_contains($c, 'web') || str_contains($c, 'backend') => 2,
+                default => 3,
+            };
+        };
+        $position = $groups->keys()->flip();
+
+        return $groups->sortBy(fn ($_, $cat) => [$rank((string) $cat), $position[$cat]]);
     }
 
     public function projects(Request $request)
