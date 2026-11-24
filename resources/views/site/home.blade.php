@@ -230,6 +230,9 @@
         $ring = 2 * M_PI * 22; // circumference for r = 22
         $half = (int) ceil($allSkills->count() / 2);
         $rows = $allSkills->count() > 6 ? [$allSkills->take($half), $allSkills->skip($half)] : [$allSkills];
+        // Default tab: the Mobile category, else the first one (there is no "All" tab).
+        $defaultCat = $skillGroups->keys()->first(fn ($c) => str_contains(mb_strtolower($c), 'mobile')) ?? $skillGroups->keys()->first();
+        $hasTabs = $skillGroups->count() > 1;
     @endphp
     <section id="skills" class="section relative scroll-mt-16 overflow-hidden">
         <div class="bg-grid absolute inset-0 -z-10 opacity-60"></div>
@@ -267,18 +270,17 @@
                 </dl>
             </div>
 
-            @if ($skillGroups->count() > 1)
-                <div class="reveal mt-10 flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white/70 p-1.5 backdrop-blur sm:inline-flex dark:border-white/10 dark:bg-white/[0.04]" data-skill-tabs role="tablist">
-                    <button type="button" data-skill-tab="*" class="skill-tab is-active">All <span>{{ $allSkills->count() }}</span></button>
+            @if ($hasTabs)
+                <div class="no-scrollbar reveal mt-10 flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white/70 p-1.5 backdrop-blur sm:inline-flex dark:border-white/10 dark:bg-white/[0.04]" data-skill-tabs role="tablist">
                     @foreach ($skillGroups as $category => $skills)
-                        <button type="button" data-skill-tab="{{ $category }}" class="skill-tab">{{ $category }} <span>{{ $skills->count() }}</span></button>
+                        <button type="button" data-skill-tab="{{ $category }}" role="tab" aria-selected="{{ $category === $defaultCat ? 'true' : 'false' }}" class="skill-tab {{ $category === $defaultCat ? 'is-active' : '' }}">{{ $category }} <span>{{ $skills->count() }}</span></button>
                     @endforeach
                 </div>
             @endif
 
             <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5" data-skill-grid>
                 @foreach ($allSkills as $skill)
-                    <div class="skill-tile reveal" data-skill-cat="{{ $skill->category }}">
+                    <div class="skill-tile reveal {{ $hasTabs && $skill->category !== $defaultCat ? 'is-hidden' : '' }}" data-skill-cat="{{ $skill->category }}">
                         <div class="relative z-10 flex items-start justify-between gap-2">
                             <span class="skill-icon">
                                 @if ($skill->icon)
@@ -679,53 +681,100 @@
 
     {{-- CONTACT --}}
     @if (setting_on('show_contact'))
-    <section id="contact" class="section scroll-mt-16">
-        <div class="container-x">
-            <div class="card reveal relative overflow-hidden p-6 sm:p-12">
-                <div class="blob -right-20 -top-20 size-72" style="background: var(--accent)"></div>
-                <div class="relative grid gap-12 lg:grid-cols-[1fr_1.3fr]">
-                    <div>
-                        <span class="eyebrow">Contact</span>
-                        <h2 class="section-title">Have a project or a question?</h2>
-                        <p class="mt-4 text-slate-600 dark:text-slate-400">Send me a message and I'll reply as soon as possible. Every query is welcome.</p>
-                        <div class="mt-8 space-y-4">
-                            @foreach (['email' => 'mail', 'phone' => 'phone', 'location' => 'map-pin'] as $key => $icon)
-                                @if (setting($key))
-                                    @php $href = match ($key) { 'email' => 'mailto:'.setting($key), 'phone' => 'tel:'.preg_replace('/\s+/', '', setting($key)), default => null }; @endphp
-                                    <a @if($href) href="{{ $href }}" @endif class="flex items-center gap-4 rounded-xl p-2 -m-2 transition hover:bg-accent/5">
-                                        <span class="grid size-12 place-items-center rounded-xl text-white" style="background-image: linear-gradient(135deg, var(--accent), var(--accent-2))"><x-icon :name="$icon" /></span>
-                                        <span class="font-medium text-slate-900 dark:text-white">{{ setting($key) }}</span>
-                                    </a>
-                                @endif
-                            @endforeach
-                        </div>
-                        <div class="mt-8">@include('site.partials.socials')</div>
-                    </div>
+    @php
+        // When the blog is hidden, the contact section follows a section with the same plain
+        // background, so it gets its own tint — otherwise the two paddings read as one big gap.
+        $blogShown = setting_on('show_blog') && $posts->isNotEmpty();
+        $contactInfo = collect([
+            'email' => ['mail', 'Email me', fn ($v) => 'mailto:'.$v],
+            'phone' => ['phone', 'Call / WhatsApp', fn ($v) => 'tel:'.preg_replace('/\s+/', '', $v)],
+            'location' => ['map-pin', 'Based in', null],
+        ])->filter(fn ($_, $key) => setting($key));
+    @endphp
+    <section id="contact" class="section relative scroll-mt-16 overflow-hidden {{ $blogShown ? '' : 'bg-white/50 dark:bg-white/[0.015]' }}">
+        <div class="bg-grid absolute inset-0 -z-10 opacity-50"></div>
+        <div class="blob -z-10 -top-24 -left-32 size-[26rem]" style="background: var(--accent)"></div>
+        <div class="blob -z-10 -bottom-32 -right-32 size-[26rem]" style="background: var(--accent-2)"></div>
 
-                    <form method="POST" action="{{ route('contact.store') }}" class="grid gap-4 sm:grid-cols-2" data-ajax-form data-success-title="Message sent">
+        <div class="container-x">
+            <div class="reveal mx-auto max-w-2xl text-center">
+                <span class="eyebrow"><x-icon name="message" class="size-3.5" /> Contact</span>
+                <h2 class="section-title">Let's build something <span class="gradient-text">great together</span></h2>
+                <p class="mt-4 text-slate-600 dark:text-slate-400">Have a project, an idea or just a question? Send me a message and I'll get back to you as soon as possible.</p>
+                @if (setting_on('available_for_work'))
+                    <span class="mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                        <span class="relative flex size-2"><span class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-75"></span><span class="relative inline-flex size-2 rounded-full bg-emerald-500"></span></span>
+                        Available for new projects
+                    </span>
+                @endif
+            </div>
+
+            <div class="mt-12 grid gap-6 lg:grid-cols-[1fr_1.5fr] lg:gap-8">
+                {{-- Contact details --}}
+                <div class="reveal flex flex-col gap-4">
+                    @foreach ($contactInfo as $key => [$icon, $label, $link])
+                        @php $value = setting($key); $href = $link ? $link($value) : null; @endphp
+                        <a @if ($href) href="{{ $href }}" @endif class="contact-tile group">
+                            <span class="grid size-12 shrink-0 place-items-center rounded-xl text-white shadow-lg shadow-accent/20" style="background-image: linear-gradient(135deg, var(--accent), var(--accent-2))"><x-icon :name="$icon" class="size-5" /></span>
+                            <span class="min-w-0 flex-1">
+                                <span class="block text-xs font-medium uppercase tracking-wider text-slate-500">{{ $label }}</span>
+                                <span class="block truncate font-semibold text-slate-900 dark:text-white">{{ $value }}</span>
+                            </span>
+                            @if ($href)
+                                <x-icon name="arrow-up-right" class="size-5 shrink-0 text-slate-400 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+                            @endif
+                        </a>
+                    @endforeach
+
+                    <div class="contact-tile flex-col !items-start gap-4 lg:mt-auto">
+                        <div class="flex items-center gap-3">
+                            <span class="grid size-10 place-items-center rounded-xl bg-accent/10 text-accent"><x-icon name="clock" class="size-5" /></span>
+                            <div>
+                                <p class="font-semibold text-slate-900 dark:text-white">Quick response</p>
+                                <p class="text-sm text-slate-500">I usually reply within 24 hours.</p>
+                            </div>
+                        </div>
+                        @include('site.partials.socials')
+                    </div>
+                </div>
+
+                {{-- Form --}}
+                <div class="reveal contact-form-card">
+                    <h3 class="font-display text-xl font-semibold text-slate-900 dark:text-white">Send a message</h3>
+                    <p class="mt-1 text-sm text-slate-500">Fields marked * are required.</p>
+                    <form method="POST" action="{{ route('contact.store') }}" class="mt-6 grid gap-4 sm:grid-cols-2" data-ajax-form data-success-title="Message sent">
                         @csrf
                         <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
                         <div>
                             <label class="label" for="c-name">Name *</label>
-                            <input id="c-name" name="name" value="{{ old('name') }}" class="input" required placeholder="Jane Doe">
+                            <div class="input-icon">
+                                <x-icon name="user" class="size-4" />
+                                <input id="c-name" name="name" value="{{ old('name') }}" class="input" required placeholder="Jane Doe" autocomplete="name">
+                            </div>
                             @error('name')<p class="error">{{ $message }}</p>@enderror
                         </div>
                         <div>
                             <label class="label" for="c-email">Email *</label>
-                            <input id="c-email" type="email" name="email" value="{{ old('email') }}" class="input" required placeholder="jane@example.com">
+                            <div class="input-icon">
+                                <x-icon name="mail" class="size-4" />
+                                <input id="c-email" type="email" name="email" value="{{ old('email') }}" class="input" required placeholder="jane@example.com" autocomplete="email">
+                            </div>
                             @error('email')<p class="error">{{ $message }}</p>@enderror
                         </div>
                         <div class="sm:col-span-2">
                             <label class="label" for="c-subject">Subject</label>
-                            <input id="c-subject" name="subject" value="{{ old('subject') }}" class="input" placeholder="Project inquiry">
+                            <div class="input-icon">
+                                <x-icon name="tag" class="size-4" />
+                                <input id="c-subject" name="subject" value="{{ old('subject') }}" class="input" placeholder="Project inquiry">
+                            </div>
                         </div>
                         <div class="sm:col-span-2">
                             <label class="label" for="c-message">Message *</label>
-                            <textarea id="c-message" name="message" rows="5" class="input" required placeholder="Tell me about your project...">{{ old('message') }}</textarea>
+                            <textarea id="c-message" name="message" rows="5" class="input resize-y" required placeholder="Tell me about your project...">{{ old('message') }}</textarea>
                             @error('message')<p class="error">{{ $message }}</p>@enderror
                         </div>
                         <div class="sm:col-span-2">
-                            <button class="btn btn-primary w-full sm:w-auto"><x-icon name="send" class="size-4" /> Send message</button>
+                            <button class="btn btn-primary w-full py-3"><x-icon name="send" class="size-4" /> Send message</button>
                         </div>
                     </form>
                 </div>

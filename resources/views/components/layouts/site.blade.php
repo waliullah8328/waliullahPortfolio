@@ -47,7 +47,8 @@
     </style>
 </head>
 <body class="min-h-screen overflow-x-hidden font-sans">
-    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] btn btn-primary">Skip to content</a>
+    {{-- Off-screen until focused with the keyboard (no button styling while hidden, so nothing can peek out). --}}
+    <a href="#main" class="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-3 focus-visible:left-3 focus-visible:z-[60] focus-visible:rounded-xl focus-visible:px-5 focus-visible:py-2.5 focus-visible:text-sm focus-visible:font-semibold focus-visible:text-white focus-visible:bg-accent">Skip to content</a>
 
     <header data-header class="fixed inset-x-0 top-0 z-50 backdrop-blur-xl transition-all duration-300">
         <nav class="container-x flex h-16 items-center justify-between">
